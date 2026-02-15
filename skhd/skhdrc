@@ -1,0 +1,31 @@
+# ========== Window Focus (alt + hjkl) ==========
+
+alt - h : /opt/homebrew/bin/yabai -m window --focus west
+alt - l : /opt/homebrew/bin/yabai -m window --focus east
+
+# ========== Window Resize (shift + alt + hl) ==========
+
+shift + alt - h : /opt/homebrew/bin/yabai -m window west --resize right:-20:0 2>/dev/null || /opt/homebrew/bin/yabai -m window --resize right:-20:0
+shift + alt - l : /opt/homebrew/bin/yabai -m window east --resize left:20:0 2>/dev/null || /opt/homebrew/bin/yabai -m window --resize left:20:0
+
+# ========== Window Management ==========
+
+alt - d : open -a Launchpad
+alt - f : /opt/homebrew/bin/yabai -m space --layout bsp
+shift + alt - space : /opt/homebrew/bin/yabai -m window --toggle float
+alt - return : open -a iTerm
+shift + alt - return : /opt/homebrew/bin/yabai -m window --toggle zoom-fullscreen
+
+# ========== Move Window to Space (shift + alt + number) ==========
+
+shift + alt - 1 : /opt/homebrew/bin/yabai -m window --space 1 && /opt/homebrew/bin/yabai -m space --focus 1
+shift + alt - 2 : /opt/homebrew/bin/yabai -m window --space 2 && /opt/homebrew/bin/yabai -m space --focus 2
+shift + alt - 3 : /opt/homebrew/bin/yabai -m window --space 3 && /opt/homebrew/bin/yabai -m space --focus 3
+shift + alt - 4 : /opt/homebrew/bin/yabai -m window --space 4 && /opt/homebrew/bin/yabai -m space --focus 4
+shift + alt - 5 : /opt/homebrew/bin/yabai -m window --space 5 && /opt/homebrew/bin/yabai -m space --focus 5
+shift + alt - 6 : /opt/homebrew/bin/yabai -m window --space 6 && /opt/homebrew/bin/yabai -m space --focus 6
+shift + alt - 7 : /opt/homebrew/bin/yabai -m window --space 7 && /opt/homebrew/bin/yabai -m space --focus 7
+shift + alt - 8 : /opt/homebrew/bin/yabai -m window --space 8 && /opt/homebrew/bin/yabai -m space --focus 8
+shift + alt - 9 : /opt/homebrew/bin/yabai -m window --space 9 && /opt/homebrew/bin/yabai -m space --focus 9
+shift + alt - 0 : /opt/homebrew/bin/yabai -m window --space 10 && /opt/homebrew/bin/yabai -m space --focus 10
+

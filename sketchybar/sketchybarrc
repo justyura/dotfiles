@@ -1,0 +1,118 @@
+#!/bin/bash
+
+# 颜色定义
+export BAR_COLOR=0xff1a1b26
+export ITEM_BG_COLOR=0xff292e42
+export ACCENT_COLOR=0xff7aa2f7
+export WHITE=0xffc0caf5
+export GREY=0xff565f89
+
+PLUGIN_DIR="$HOME/.config/sketchybar/plugins"
+
+# Bar 设置
+sketchybar --bar \
+  height=32 \
+  blur_radius=30 \
+  position=top \
+  sticky=on \
+  padding_left=10 \
+  padding_right=10 \
+  color=$BAR_COLOR \
+  corner_radius=0
+
+# 默认设置
+sketchybar --default \
+  padding_left=6 \
+  padding_right=5 \
+  icon.font="SF Symbols:Regular:20.0" \
+  label.font="SF Pro:Regular:18.0" \
+  icon.color=$WHITE \
+  label.color=$WHITE \
+  background.color=$ITEM_BG_COLOR \
+  background.corner_radius=10 \
+  background.height=29
+
+# ===== 左侧项目 =====
+
+# Apple 图标 + 空间指示器（单条命令）
+SPACE_ARGS=(
+  --add item apple left
+  --set apple
+    icon=
+    icon.font="SF Pro:Black:16.0"
+    label.drawing=off
+    click_script="sketchybar -m --set \$NAME popup.drawing=toggle"
+)
+
+for i in {1..10}; do
+  SPACE_ARGS+=(
+    --add space "space.$i" left
+    --set "space.$i"
+      space=$i
+      icon=$i
+      icon.font="SF Pro:Semibold:15.0"
+      icon.padding_left=0
+      icon.padding_right=0
+      padding_left=10
+      padding_right=10
+      label.drawing=off
+      icon.highlight_color=$ACCENT_COLOR
+      background.drawing=off
+      click_script="yabai -m space --focus $i"
+  )
+done
+
+sketchybar "${SPACE_ARGS[@]}"
+
+# 空间事件订阅
+sketchybar --add event space_change \
+  --set space.1 script="$PLUGIN_DIR/space.sh" \
+  --subscribe space.1 space_change space_windows_change mouse.clicked
+for i in $(seq 2 10); do
+  sketchybar --subscribe "space.$i" mouse.clicked
+done
+
+source "$HOME/.config/sketchybar/items/front_app.sh"
+
+# ===== 右侧项目（单条命令）=====
+
+sketchybar \
+  --add item calendar right \
+  --set calendar \
+    update_freq=1 \
+    icon.font="SF Pro:Semibold:15.0" \
+    label.font="SF Pro:Semibold:15.0" \
+    background.drawing=off \
+    script="$PLUGIN_DIR/calendar.sh" \
+    click_script="open -a Calendar" \
+  \
+  --add item battery right \
+  --set battery \
+    update_freq=60 \
+    icon.font="SF Pro:Semibold:15.0" \
+    label.font="SF Pro:Semibold:15.0" \
+    background.drawing=off \
+    script="$PLUGIN_DIR/battery.sh" \
+  \
+  --add event input_source_update \
+  --add item input_source right \
+  --set input_source \
+    icon=􀇳 \
+    icon.font="SF Pro:Semibold:15.0" \
+    icon.color=$WHITE \
+    label.font="SF Pro:Semibold:15.0" \
+    label.color=$WHITE \
+    label.padding_left=5 \
+    label.padding_right=5 \
+    width=50 \
+    background.drawing=off \
+    script="$PLUGIN_DIR/input_source.sh" \
+    click_script="$PLUGIN_DIR/input_source_toggle.sh" \
+  --subscribe input_source system_woke input_source_update
+
+sketchybar --update
+
+# 启动输入法监听器
+"$PLUGIN_DIR/input_source_listener.sh" &
+
+echo "SketchyBar configuration loaded successfully"

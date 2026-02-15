@@ -1,0 +1,29 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "88990a6"
+hash = "56fdabc96fc1f4d53c96eb884b02a5be"
+
+[[plugin.deps]]
+use = "boydaihungst/restore"
+rev = "4eda0bf"
+hash = "778941e7f1ebbacd60f4e254bb3c51de"
+
+[[flavor.deps]]
+use = "yazi-rs/flavors:catppuccin-macchiato"
+rev = "4c57537"
+hash = "2f60298d6c26b6d388c8091a9389fa8f"
+
+[[flavor.deps]]
+use = "malick-tammal/monokai"
+rev = "e59f6cb"
+hash = "dcb449d46e30dc020e4b7b59202d2448"
+
+[[flavor.deps]]
+use = "BennyOe/tokyo-night"
+rev = "8e6296f"
+hash = "d9da921c3bd37ba32ee27a8a7a40461f"
+
+[[flavor.deps]]
+use = "kalidyasin/yazi-flavors:tokyonight-storm"
+rev = "70fe6b4"
+hash = "5e3e7bacbda43a1816d1e8be53a3599e"

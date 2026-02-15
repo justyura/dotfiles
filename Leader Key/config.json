@@ -1,0 +1,95 @@
+{
+  "type": "group",
+  "actions": [
+    {
+	"key": "r",
+	"type": "command",
+	"value": "~/.config/scripts/toggle_rotation.sh 2>/dev/null; true"
+    },
+    {
+	"key": "y",
+	"type": "command",
+	"value": "/opt/homebrew/bin/yabai --restart-service; /opt/homebrew/bin/skhd --restart-service 2>/dev/null; true"
+    },
+    {
+      "key": "1",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 1 2>/dev/null; true"
+    },
+    {
+      "key": "2",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 2 2>/dev/null; true"
+    },
+    {
+      "key": "3",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 3 2>/dev/null; true"
+    },
+    {
+      "key": "4",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 4 2>/dev/null; true"
+    },
+    {
+      "key": "5",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 5 2>/dev/null; true"
+    },
+    {
+      "key": "6",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 6 2>/dev/null; true"
+    },
+    {
+      "key": "7",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 7 2>/dev/null; true"
+    },
+    {
+      "key": "8",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 8 2>/dev/null; true"
+    },
+    {
+      "key": "9",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 9 2>/dev/null; true"
+    },
+    {
+      "key": "0",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus 10 2>/dev/null; true"
+    },
+    {
+      "key": "o",
+      "type": "command",
+      "value": "open -a Claude; /opt/homebrew/bin/yabai -m space --focus 8 2>/dev/null; true"
+    },
+    {
+      "key": "s",
+      "type": "command",
+      "value": "open -a Safari; /opt/homebrew/bin/yabai -m space --focus 3 2>/dev/null; true"
+    },
+    {
+      "key": "c",
+      "type": "command",
+      "value": "open -a iTerm; /opt/homebrew/bin/yabai -m space --focus 1 2>/dev/null; true"
+    },
+    {
+      "key": "space",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus recent 2>/dev/null; true"
+    },
+    {
+      "key": ";",
+      "type": "command",
+      "value": "/opt/homebrew/bin/yabai -m space --focus recent 2>/dev/null; true"
+    },
+    {
+      "key": "v",
+      "type": "command",
+      "value": "/Users/yura/.config/scripts/key_stroke.sh"
+    }
+  ]
+}

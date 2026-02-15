@@ -1,0 +1,69 @@
+{
+    "profiles": [
+        {
+            "name": "Default profile",
+            "selected": true,
+            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" },
+            "simple_modifications": [
+                {
+                    "from": { "key_code": "caps_lock" },
+                    "to": [{ "key_code": "escape" }]
+                },
+                {
+                    "from": { "key_code": "escape" },
+                    "to": [{ "key_code": "caps_lock" }]
+                }
+            ],
+            "complex_modifications": {
+                "rules": [
+		    {
+			"description": "Right Cmd tap → search popup",
+			"manipulators": [
+			    {
+				"type": "basic",
+				"from": {
+				    "key_code": "right_command",
+				    "modifiers": { "optional": ["any"] }
+				},
+				"to": [
+				    { "key_code": "right_command", "lazy": true }
+				],
+				"to_if_alone": [
+				    {
+					"shell_command": "/Users/yura/.config/scripts/search_and_focus.sh"
+				    }
+				],
+				"parameters": {
+				    "basic.to_if_alone_timeout_milliseconds": 200
+				}
+			    }
+			]
+		    },
+                    {
+                        "description": "Space + ; → fn+F12 (leader)",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "simultaneous": [
+                                        { "key_code": "spacebar" },
+                                        { "key_code": "semicolon" }
+                                    ]
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "f12",
+                                        "modifiers": ["fn"]
+                                    }
+                                ],
+                                "parameters": {
+                                    "basic.simultaneous_threshold_milliseconds": 50
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
