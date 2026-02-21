@@ -1,0 +1,19 @@
+# app-generated, not config
+alacritty/
+cagent/
+claude/
+envman/
+gh/
+github-copilot/
+htop/
+iterm2/
+raycast/
+neofetch/
+git/
+zathura/
+
+# runtime files
+*.log
+*.swp
+*.bak
+.DS_Store

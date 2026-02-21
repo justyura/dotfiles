@@ -72,6 +72,9 @@ return {
 	})
       end)
 
+      vim.keymap.set('n', '<space>e', '<cmd>Telescope diagnostics<CR>')
+
+
       -- Telescope 全局配置
       require('telescope').setup({
 	defaults = {

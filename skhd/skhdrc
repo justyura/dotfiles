@@ -2,6 +2,7 @@
 
 alt - h : /opt/homebrew/bin/yabai -m window --focus west
 alt - l : /opt/homebrew/bin/yabai -m window --focus east
+alt - t : ~/.config/yabai/scripts/toggle_top_padding.sh
 
 # ========== Window Resize (shift + alt + hl) ==========
 
@@ -10,11 +11,9 @@ shift + alt - l : /opt/homebrew/bin/yabai -m window east --resize left:20:0 2>/d
 
 # ========== Window Management ==========
 
-alt - d : open -a Launchpad
-alt - f : /opt/homebrew/bin/yabai -m space --layout bsp
-shift + alt - space : /opt/homebrew/bin/yabai -m window --toggle float
 alt - return : open -a iTerm
 shift + alt - return : /opt/homebrew/bin/yabai -m window --toggle zoom-fullscreen
+shift + alt - f : /opt/homebrew/bin/yabai -m window --toggle native-fullscreen
 
 # ========== Move Window to Space (shift + alt + number) ==========
 
@@ -28,4 +27,13 @@ shift + alt - 7 : /opt/homebrew/bin/yabai -m window --space 7 && /opt/homebrew/b
 shift + alt - 8 : /opt/homebrew/bin/yabai -m window --space 8 && /opt/homebrew/bin/yabai -m space --focus 8
 shift + alt - 9 : /opt/homebrew/bin/yabai -m window --space 9 && /opt/homebrew/bin/yabai -m space --focus 9
 shift + alt - 0 : /opt/homebrew/bin/yabai -m window --space 10 && /opt/homebrew/bin/yabai -m space --focus 10
+
+
+# Window focus
+alt - b : /opt/homebrew/bin/yabai -m space --focus recent
+
+# App launchers
+shift + alt - o : open -a Claude; /opt/homebrew/bin/yabai -m space --focus 8 2>/dev/null; true
+shift + alt - a : open -a iTerm; /opt/homebrew/bin/yabai -m space --focus 1 2>/dev/null; true
+shift + alt - c : open -a Safari; /opt/homebrew/bin/yabai -m space --focus 3 2>/dev/null; true
 
