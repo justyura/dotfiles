@@ -92,27 +92,8 @@ sketchybar \
     icon.font="SF Pro:Semibold:15.0" \
     label.font="SF Pro:Semibold:15.0" \
     background.drawing=off \
-    script="$PLUGIN_DIR/battery.sh" \
-  \
-  --add event input_source_update \
-  --add item input_source right \
-  --set input_source \
-    icon=􀇳 \
-    icon.font="SF Pro:Semibold:15.0" \
-    icon.color=$WHITE \
-    label.font="SF Pro:Semibold:15.0" \
-    label.color=$WHITE \
-    label.padding_left=5 \
-    label.padding_right=5 \
-    width=50 \
-    background.drawing=off \
-    script="$PLUGIN_DIR/input_source.sh" \
-    click_script="$PLUGIN_DIR/input_source_toggle.sh" \
-  --subscribe input_source system_woke input_source_update
+    script="$PLUGIN_DIR/battery.sh"
 
 sketchybar --update
-
-# 启动输入法监听器
-"$PLUGIN_DIR/input_source_listener.sh" &
 
 echo "SketchyBar configuration loaded successfully"
