@@ -3,7 +3,14 @@ set -euo pipefail
 
 ssh_config="$HOME/.ssh/config"
 orbstack_config="$HOME/.orbstack/ssh/config"
-local_machine="macbook"
+machine_lib="$HOME/.config/scripts/tmux/machine.sh"
+if [[ ! -r "$machine_lib" ]]; then
+  machine_lib="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/machine.sh"
+fi
+# shellcheck source=machine.sh
+source "$machine_lib"
+local_machine=$(dotfiles_machine_name)
+local_machine_os=$(dotfiles_machine_os)
 
 list_hosts() {
   local config
@@ -73,7 +80,7 @@ if [[ "$machine" == "$local_machine" ]]; then
   # 本机 project 永远使用本地 shell，不继承 SSH project 的默认命令。
   tmux set-option -u -t "$session_name" default-command 2>/dev/null || true
   tmux set-option -u -t "$session_name" @ssh-host 2>/dev/null || true
-  tmux set-option -t "$session_name" @machine-os macos
+  tmux set-option -t "$session_name" @machine-os "$local_machine_os"
 else
   host="$machine"
   session_name="ssh-${host//./-}"

@@ -2,6 +2,12 @@
 set -euo pipefail
 
 current_session_id="${1:-}"
+machine_lib="$HOME/.config/scripts/tmux/machine.sh"
+if [[ ! -r "$machine_lib" ]]; then
+  machine_lib="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/machine.sh"
+fi
+# shellcheck source=../machine.sh
+source "$machine_lib"
 
 # 机器是一级上下文；project 只在当前机器内导航。
 inactive_fg="#8A8980"
@@ -17,13 +23,15 @@ machine_badge() {
   local name icon color
 
   if [[ -z "$host" ]]; then
-    name="MacBook"
-    os="macos"
+    name=$(dotfiles_machine_name)
+    # A local session always reflects the machine running this status script;
+    # ignore stale @machine-os values written by older configurations.
+    os=$(dotfiles_machine_os)
   else
     name="$host"
   fi
 
-  # 旧 session 还没有检测缓存时，先按 Host 名做一次合理回退。
+  # 远端旧 session 还没有检测缓存时，先按 Host 名做一次合理回退。
   if [[ -z "$os" ]]; then
     case "$host" in
       mini|mac|macbook*) os="macos" ;;
