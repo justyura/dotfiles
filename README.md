@@ -35,7 +35,9 @@ cd ~/.local/share/dotfiles
 Linux 发行版自带的 Neovim 可能过旧。脚本检测到低于 0.12 时，会从 Neovim 官方
 release 安装当前版本到 `/opt/dotfiles/`，并通过 `/usr/local/bin/nvim` 启用它。
 Neovim 不使用 apt、pacman 或 dnf 中的版本。脚本也会安装 Treesitter parser 编译
-所需的 C 工具链，并独立下载 tree-sitter CLI 0.26.1+。
+所需的 C 工具链，并独立下载 tree-sitter CLI 0.26.1+。如果官方 CLI 与目标机器的
+libc 不兼容，脚本会在临时目录安装最小 Rust 工具链并完成本地编译，成功后只保留
+tree-sitter 二进制。Neovim 自带的 Lua、Vim 和 Markdown parser 不会重复安装。
 
 只部署配置、不安装软件包：
 

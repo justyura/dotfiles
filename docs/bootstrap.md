@@ -52,8 +52,14 @@ release archive directly, installs it below `/opt/dotfiles/`, and creates an ent
 
 The `nvim-treesitter` main branch also requires tree-sitter CLI 0.26.1 or newer and a C compiler.
 Bootstrap installs the compiler toolchain from the Linux package manager and the official CLI
-release below `/opt/dotfiles/`, exposed as `/usr/local/bin/tree-sitter`. macOS installs the CLI
-through Homebrew.
+release below `/opt/dotfiles/`, exposed as `/usr/local/bin/tree-sitter`. If that binary cannot
+run against the machine's libc, bootstrap installs an isolated minimal Rust toolchain in a
+temporary directory and builds the CLI locally as a compatibility fallback. The toolchain,
+Cargo cache, and build tree are removed afterwards; only the resulting CLI is retained. macOS
+installs the CLI through Homebrew.
+
+Neovim 0.12 already ships the Lua, Vim, Vimdoc, Markdown, and Markdown Inline parsers. The
+plugin installer therefore only adds Bash, JSON, YAML, TOML, tmux, and the Go module family.
 
 The normal install also bootstraps TPM under `~/.tmux/plugins/tpm` and installs the plugins from
 `tmux.conf`. Neovim bootstraps lazy.nvim and its plugins on first launch.

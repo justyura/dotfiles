@@ -142,6 +142,95 @@ tree_sitter_meets_requirement() {
   }
 }
 
+install_tree_sitter_binary() {
+  tree_sitter_binary=$1
+  tree_sitter_arch=$2
+
+  tree_sitter_meets_requirement "$tree_sitter_binary" || return 1
+  tree_sitter_version=$("$tree_sitter_binary" --version | awk '{print $2}')
+  install_dir=/opt/dotfiles/tree-sitter-$tree_sitter_version-$tree_sitter_arch
+
+  if [ -e "$install_dir" ] && [ ! -x "$install_dir/bin/tree-sitter" ]; then
+    die "$install_dir exists but does not contain a working tree-sitter binary"
+  elif [ ! -x "$install_dir/bin/tree-sitter" ]; then
+    as_root mkdir -p "$install_dir/bin"
+    as_root cp "$tree_sitter_binary" "$install_dir/bin/tree-sitter"
+    as_root chmod 755 "$install_dir/bin/tree-sitter"
+  fi
+
+  tree_sitter_link=/usr/local/bin/tree-sitter
+  if [ -e "$tree_sitter_link" ] || [ -L "$tree_sitter_link" ]; then
+    current_target=$(readlink "$tree_sitter_link" 2>/dev/null || true)
+    [ "$current_target" = "$install_dir/bin/tree-sitter" ] || \
+      die "$tree_sitter_link already exists and is not managed by this bootstrap"
+  else
+    as_root mkdir -p /usr/local/bin
+    as_root ln -s "$install_dir/bin/tree-sitter" "$tree_sitter_link"
+  fi
+}
+
+ensure_cargo_linux() {
+  toolchain_workspace=$1
+  rustup_home=$toolchain_workspace/rustup
+  cargo_home=$toolchain_workspace/cargo
+  CARGO_COMMAND=$cargo_home/bin/cargo
+
+  case "$(uname -m)" in
+    x86_64|amd64) rust_target=x86_64-unknown-linux-gnu ;;
+    aarch64|arm64) rust_target=aarch64-unknown-linux-gnu ;;
+    *) die "cannot install a Rust toolchain on unsupported architecture: $(uname -m)" ;;
+  esac
+
+  rustup_dir=$toolchain_workspace/rustup-bootstrap
+  mkdir -p "$rustup_dir"
+  rustup_init=$rustup_dir/rustup-init
+  rustup_checksum=$rustup_dir/rustup-init.sha256
+  rustup_url=https://static.rust-lang.org/rustup/dist/$rust_target/rustup-init
+  say "Installing a minimal Rust toolchain for the tree-sitter local build"
+  if ! curl -fL --retry 3 -o "$rustup_init" "$rustup_url" || \
+     ! curl -fL --retry 3 -o "$rustup_checksum" "$rustup_url.sha256"; then
+    rm -rf "$toolchain_workspace"
+    die "failed to download rustup-init or its checksum from $rustup_url"
+  fi
+  if ! (cd "$rustup_dir" && sha256sum -c rustup-init.sha256); then
+    rm -rf "$toolchain_workspace"
+    die "rustup-init checksum verification failed"
+  fi
+  chmod 755 "$rustup_init"
+  if ! RUSTUP_HOME=$rustup_home CARGO_HOME=$cargo_home \
+       "$rustup_init" -y --profile minimal --no-modify-path; then
+    rm -rf "$toolchain_workspace"
+    die "failed to install the Rust toolchain"
+  fi
+  rm -rf "$rustup_dir"
+
+  if [ ! -x "$CARGO_COMMAND" ]; then
+    rm -rf "$toolchain_workspace"
+    die "Rust was installed, but cargo was not found at $CARGO_COMMAND"
+  fi
+}
+
+build_tree_sitter_linux() {
+  tree_sitter_arch=$1
+  build_dir=$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-tree-sitter-build.XXXXXX")
+  ensure_cargo_linux "$build_dir/toolchain"
+  build_root=$build_dir/root
+  say "Building tree-sitter CLI locally for this Linux system"
+  if ! RUSTUP_HOME=$rustup_home CARGO_HOME=$cargo_home \
+       "$CARGO_COMMAND" install tree-sitter-cli --version 0.27.0 --locked --root "$build_root"; then
+    rm -rf "$build_dir"
+    die "failed to build tree-sitter CLI locally"
+  fi
+
+  built_tree_sitter=$build_root/bin/tree-sitter
+  if ! install_tree_sitter_binary "$built_tree_sitter" "$tree_sitter_arch"; then
+    "$built_tree_sitter" --version 2>&1 || true
+    rm -rf "$build_dir"
+    die "locally built tree-sitter CLI does not meet the required version (0.26.1+)"
+  fi
+  rm -rf "$build_dir"
+}
+
 install_tree_sitter_linux() {
   if command -v tree-sitter >/dev/null 2>&1 && tree_sitter_meets_requirement "$(command -v tree-sitter)"; then
     return 0
@@ -173,34 +262,14 @@ install_tree_sitter_linux() {
   fi
 
   extracted_tree_sitter=$temporary_dir/tree-sitter
-  tree_sitter_meets_requirement "$extracted_tree_sitter" || {
+  if ! install_tree_sitter_binary "$extracted_tree_sitter" "$tree_sitter_arch"; then
+    warn "the official tree-sitter binary cannot run on this system; its error follows"
+    "$extracted_tree_sitter" --version 2>&1 || true
     rm -rf "$temporary_dir"
-    die "downloaded tree-sitter CLI does not meet the required version (0.26.1+)"
-  }
-  tree_sitter_version=$("$extracted_tree_sitter" --version | awk '{print $2}')
-  install_dir=/opt/dotfiles/tree-sitter-$tree_sitter_version-$tree_sitter_arch
-
-  if [ -e "$install_dir" ] && [ ! -x "$install_dir/bin/tree-sitter" ]; then
-    rm -rf "$temporary_dir"
-    die "$install_dir exists but does not contain a working tree-sitter binary"
-  elif [ ! -x "$install_dir/bin/tree-sitter" ]; then
-    as_root mkdir -p "$install_dir/bin"
-    as_root cp "$extracted_tree_sitter" "$install_dir/bin/tree-sitter"
-    as_root chmod 755 "$install_dir/bin/tree-sitter"
-  fi
-
-  tree_sitter_link=/usr/local/bin/tree-sitter
-  if [ -e "$tree_sitter_link" ] || [ -L "$tree_sitter_link" ]; then
-    current_target=$(readlink "$tree_sitter_link" 2>/dev/null || true)
-    [ "$current_target" = "$install_dir/bin/tree-sitter" ] || {
-      rm -rf "$temporary_dir"
-      die "$tree_sitter_link already exists and is not managed by this bootstrap"
-    }
+    build_tree_sitter_linux "$tree_sitter_arch"
   else
-    as_root mkdir -p /usr/local/bin
-    as_root ln -s "$install_dir/bin/tree-sitter" "$tree_sitter_link"
+    rm -rf "$temporary_dir"
   fi
-  rm -rf "$temporary_dir"
   hash -r 2>/dev/null || true
 
   command -v tree-sitter >/dev/null 2>&1 || die "tree-sitter CLI was installed, but is not on PATH"
@@ -253,6 +322,7 @@ install_linux_system_packages() {
   command -v git >/dev/null 2>&1 || die "Git installation completed, but git is not on PATH"
   command -v curl >/dev/null 2>&1 || die "curl installation completed, but curl is not on PATH"
   command -v cc >/dev/null 2>&1 || die "compiler installation completed, but cc is not on PATH"
+  command -v sha256sum >/dev/null 2>&1 || die "sha256sum is required to verify downloaded toolchains"
   command -v unzip >/dev/null 2>&1 || die "unzip installation completed, but unzip is not on PATH"
 }
 

@@ -11,15 +11,12 @@ return {
     }
 
     ts.install {
-      'lua', 'vim', 'vimdoc', 'bash',
-      'markdown', 'markdown_inline',
+      -- Neovim 0.12 already includes Lua, Vim, Vimdoc, Markdown, and
+      -- Markdown Inline parsers. Keep only languages used by this setup.
+      'bash',
       'json', 'yaml', 'toml',
       'tmux',
       'go', 'gomod', 'gosum', 'gowork',
-      'python',
-      'rust',
-      'typescript', 'tsx', 'javascript',
-      'html', 'css',
     }
 
     vim.api.nvim_create_autocmd('FileType', {
