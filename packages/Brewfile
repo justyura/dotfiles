@@ -1,0 +1,19 @@
+# Shared command-line tools.
+brew "git"
+brew "neovim"
+brew "tmux"
+brew "fzf"
+brew "ripgrep"
+brew "jq"
+
+# macOS window-management stack.
+tap "koekeishiya/formulae"
+brew "yabai"
+brew "skhd"
+tap "FelixKratz/formulae"
+brew "sketchybar"
+
+# Utilities used by scripts/.
+brew "choose-gui"
+brew "displayplacer"
+

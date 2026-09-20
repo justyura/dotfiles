@@ -1,0 +1,4 @@
+# Paths shared by macOS and Linux, relative to ~/.config.
+nvim
+tmux
+

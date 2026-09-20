@@ -1,0 +1,3 @@
+# Only the portable subset of scripts is deployed on Linux.
+scripts/tmux
+

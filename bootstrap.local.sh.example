@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# This file documents the optional per-machine hook. Copy it to bootstrap.local.sh;
+# that filename is ignored by Git. Keep private paths and machine-specific setup here.
+
+set -eu
+
+printf 'Finishing setup for %s from %s\n' "$DOTFILES_PLATFORM" "$DOTFILES_DIR"
+
