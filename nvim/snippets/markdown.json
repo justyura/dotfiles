@@ -1,0 +1,28 @@
+{
+  "heuristic thinking": {
+    "prefix": "so",
+    "body": [
+      "# Problem",
+      "",
+      "## What is the unknown?",
+      "- What is the expectation?",
+      "\t${1:}",
+      "- What is the present?",
+      "\t${2:}",
+      "- What is the gap?",
+      "\t${3:}",
+      "- Can you restate the problem?",
+      "\t${4:}",
+      "",
+      "## Devise a plan",
+      "- Do I know a related problem?",
+      "\t${5:}",
+      "- Can I break it into smaller parts?",
+      "\t${6:}",
+      "- What keywords should I search?",
+      "\t${7:}",
+      "- What tools/resources might help?",
+      "\t${8:}"
+    ]
+  }
+}
