@@ -1,0 +1,1 @@
+../../scripts/tmux/status/left.sh

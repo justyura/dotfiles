@@ -1,0 +1,1 @@
+../../scripts/tmux/switch_session_by_index.sh
