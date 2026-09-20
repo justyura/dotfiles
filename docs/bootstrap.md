@@ -44,8 +44,9 @@ mapping is easy to audit. The portable dependencies are Git, curl, Neovim, tmux,
 jq, and xclip.
 
 The Neovim configuration requires Neovim 0.11 or newer. Some stable Linux distributions ship
-an older build; bootstrap warns when it detects one, so it can be replaced with a current package
-from that distribution's supported backports or upstream channel.
+an older build, so Linux bootstrap checks the active binary and, when necessary, installs the
+official release archive below `/opt/dotfiles/` with an entry point at `/usr/local/bin/nvim`.
+Existing unmanaged files at that entry point are never overwritten.
 
 The normal install also bootstraps TPM under `~/.tmux/plugins/tpm` and installs the plugins from
 `tmux.conf`. Neovim bootstraps lazy.nvim and its plugins on first launch.

@@ -31,6 +31,9 @@ cd ~/.local/share/dotfiles
 4. 将对应 profile 中的配置链接到 `~/.config`。
 5. 安装 tmux TPM 插件；Neovim 插件会在第一次启动时自动安装。
 
+Linux 发行版自带的 Neovim 可能过旧。脚本检测到低于 0.11 时，会从 Neovim 官方
+release 安装当前版本到 `/opt/dotfiles/`，并通过 `/usr/local/bin/nvim` 启用它。
+
 只部署配置、不安装软件包：
 
 ```sh

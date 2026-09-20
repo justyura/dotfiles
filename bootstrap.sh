@@ -57,6 +57,79 @@ as_root() {
   fi
 }
 
+nvim_meets_requirement() {
+  nvim_command=$1
+  version=$("$nvim_command" --version 2>/dev/null | sed -n '1s/^NVIM v\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1 \2/p')
+  [ -n "$version" ] || return 1
+  set -- $version
+  [ "$1" -gt 0 ] || { [ "$1" -eq 0 ] && [ "$2" -ge 11 ]; }
+}
+
+install_current_neovim_linux() {
+  if command -v nvim >/dev/null 2>&1 && nvim_meets_requirement "$(command -v nvim)"; then
+    return 0
+  fi
+
+  case "$(uname -m)" in
+    x86_64|amd64) nvim_arch=x86_64 ;;
+    aarch64|arm64) nvim_arch=arm64 ;;
+    *) die "Neovim 0.11+ is required; unsupported Linux architecture: $(uname -m)" ;;
+  esac
+
+  archive_name=nvim-linux-$nvim_arch.tar.gz
+  download_url=https://github.com/neovim/neovim/releases/latest/download/$archive_name
+  if [ "$DRY_RUN" -eq 1 ]; then
+    say "Would install the current Neovim release for Linux $nvim_arch from $download_url"
+    return 0
+  fi
+
+  temporary_dir=$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-neovim.XXXXXX")
+  archive_path=$temporary_dir/$archive_name
+  say "Installing current Neovim release for Linux $nvim_arch"
+  if ! curl -fL --retry 3 -o "$archive_path" "$download_url"; then
+    rm -rf "$temporary_dir"
+    die "failed to download Neovim from $download_url"
+  fi
+  if ! tar -xzf "$archive_path" -C "$temporary_dir"; then
+    rm -rf "$temporary_dir"
+    die "failed to extract $archive_name"
+  fi
+
+  extracted_dir=$temporary_dir/nvim-linux-$nvim_arch
+  extracted_nvim=$extracted_dir/bin/nvim
+  nvim_meets_requirement "$extracted_nvim" || {
+    rm -rf "$temporary_dir"
+    die "downloaded Neovim does not meet the required version (0.11+)"
+  }
+  nvim_version=$($extracted_nvim --version | sed -n '1s/^NVIM v//p')
+  install_dir=/opt/dotfiles/nvim-$nvim_version-$nvim_arch
+
+  if [ -e "$install_dir" ] && [ ! -x "$install_dir/bin/nvim" ]; then
+    rm -rf "$temporary_dir"
+    die "$install_dir exists but does not contain a working nvim binary"
+  elif [ ! -x "$install_dir/bin/nvim" ]; then
+    as_root mkdir -p /opt/dotfiles
+    as_root cp -R "$extracted_dir" "$install_dir"
+  fi
+
+  nvim_link=/usr/local/bin/nvim
+  if [ -e "$nvim_link" ] || [ -L "$nvim_link" ]; then
+    current_target=$(readlink "$nvim_link" 2>/dev/null || true)
+    [ "$current_target" = "$install_dir/bin/nvim" ] || {
+      rm -rf "$temporary_dir"
+      die "$nvim_link already exists and is not managed by this bootstrap"
+    }
+  else
+    as_root mkdir -p /usr/local/bin
+    as_root ln -s "$install_dir/bin/nvim" "$nvim_link"
+  fi
+  rm -rf "$temporary_dir"
+  hash -r 2>/dev/null || true
+
+  command -v nvim >/dev/null 2>&1 || die "Neovim was installed, but nvim is not on PATH"
+  nvim_meets_requirement "$(command -v nvim)" || die "nvim on PATH is still older than 0.11: $(command -v nvim)"
+}
+
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --config-only) INSTALL_PACKAGES=0 ;;
@@ -116,14 +189,15 @@ install_packages() {
       # Package names are kept here because they differ by distribution.
       if command -v apt-get >/dev/null 2>&1; then
         as_root apt-get update
-        as_root apt-get install -y git curl neovim tmux fzf ripgrep jq xclip
+        as_root apt-get install -y git curl tmux fzf ripgrep jq xclip
       elif command -v pacman >/dev/null 2>&1; then
-        as_root pacman -S --needed git curl neovim tmux fzf ripgrep jq xclip
+        as_root pacman -S --needed git curl tmux fzf ripgrep jq xclip
       elif command -v dnf >/dev/null 2>&1; then
-        as_root dnf install -y git curl neovim tmux fzf ripgrep jq xclip
+        as_root dnf install -y git curl tmux fzf ripgrep jq xclip
       else
         die "unsupported Linux package manager; rerun with --config-only and install packages listed in docs/bootstrap.md"
       fi
+      install_current_neovim_linux
       ;;
   esac
 }
@@ -196,11 +270,10 @@ install_tmux_plugins() {
 
 install_tmux_plugins
 
-if command -v nvim >/dev/null 2>&1; then
-  nvim_minor=$(nvim --version | sed -n '1s/.* v0\.\([0-9][0-9]*\).*/\1/p')
-  if [ -n "$nvim_minor" ] && [ "$nvim_minor" -lt 11 ]; then
-    warn "this Neovim configuration needs 0.11 or newer; install a newer build than the distribution package"
-  fi
+if ! command -v nvim >/dev/null 2>&1; then
+  warn "Neovim is not installed; this configuration requires 0.11 or newer"
+elif ! nvim_meets_requirement "$(command -v nvim)"; then
+  warn "this Neovim configuration needs 0.11 or newer; active command: $(command -v nvim)"
 fi
 
 # Optional, untracked machine-specific finishing steps.
