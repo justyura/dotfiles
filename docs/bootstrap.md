@@ -23,9 +23,11 @@ Without a checkout:
 curl -fsSL https://raw.githubusercontent.com/justyura/dotfiles/main/bootstrap.sh | sh
 ```
 
-The remote form clones to `~/.local/share/dotfiles`. Override that with `DOTFILES_DIR`, and
-override the clone URL with `DOTFILES_REPO`. Existing target files are never deleted: they are
-moved below `~/.local/state/dotfiles/backups/<timestamp>` before links are created.
+On Linux, the remote form only requires curl initially. It first installs Git and the remaining
+system packages through apt, pacman, or dnf, then clones to `~/.local/share/dotfiles`. Override
+that with `DOTFILES_DIR`, and override the clone URL with `DOTFILES_REPO`. Existing target files
+are never deleted: they are moved below `~/.local/state/dotfiles/backups/<timestamp>` before
+links are created.
 
 Useful modes:
 
@@ -39,14 +41,14 @@ Run `--dry-run` from an existing checkout so the script can inspect its profile 
 first cloning them.
 
 By default macOS packages come from `packages/Brewfile`. Linux supports apt, pacman, and dnf;
-the corresponding package names live together in `install_packages()` in `bootstrap.sh` so the
-mapping is easy to audit. The portable dependencies are Git, curl, Neovim, tmux, fzf, ripgrep,
-jq, and xclip.
+the corresponding package names live together in `install_linux_system_packages()` in
+`bootstrap.sh` so the mapping is easy to audit. The portable dependencies are Git, curl,
+Neovim, tmux, fzf, ripgrep, jq, and xclip.
 
-The Neovim configuration requires Neovim 0.12 or newer. Some stable Linux distributions ship
-an older build, so Linux bootstrap checks the active binary and, when necessary, installs the
-official release archive below `/opt/dotfiles/` with an entry point at `/usr/local/bin/nvim`.
-Existing unmanaged files at that entry point are never overwritten.
+The Neovim configuration requires Neovim 0.12 or newer. Linux does not install Neovim from its
+package manager. Bootstrap checks the active binary and, when necessary, downloads the official
+release archive directly, installs it below `/opt/dotfiles/`, and creates an entry point at
+`/usr/local/bin/nvim`. Existing unmanaged files at that entry point are never overwritten.
 
 The `nvim-treesitter` main branch also requires tree-sitter CLI 0.26.1 or newer and a C compiler.
 Bootstrap installs the compiler toolchain from the Linux package manager and the official CLI

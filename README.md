@@ -5,7 +5,8 @@ macOS 和 Linux 共用的个人配置。安装脚本会自动选择 `common + ma
 
 ## 在新机器上安装
 
-需要先有 `curl` 和 Git。macOS 还需要先安装 Homebrew；如果 `git` 不可用，先运行
+Linux 只需要预装 `curl`，脚本会先通过 apt、pacman 或 dnf 补齐 Git 和其余基础依赖，
+然后再下载配置。macOS 需要先安装 Homebrew；如果 `git` 不可用，先运行
 `xcode-select --install` 完成 Command Line Tools 安装。
 
 直接安装：
@@ -33,7 +34,8 @@ cd ~/.local/share/dotfiles
 
 Linux 发行版自带的 Neovim 可能过旧。脚本检测到低于 0.12 时，会从 Neovim 官方
 release 安装当前版本到 `/opt/dotfiles/`，并通过 `/usr/local/bin/nvim` 启用它。
-脚本也会安装 Treesitter parser 编译所需的 C 工具链和 tree-sitter CLI 0.26.1+。
+Neovim 不使用 apt、pacman 或 dnf 中的版本。脚本也会安装 Treesitter parser 编译
+所需的 C 工具链，并独立下载 tree-sitter CLI 0.26.1+。
 
 只部署配置、不安装软件包：
 

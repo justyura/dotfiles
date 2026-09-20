@@ -7,7 +7,9 @@
 # Remote use:
 #   curl -fsSL https://raw.githubusercontent.com/justyura/dotfiles/main/bootstrap.sh | sh
 #
-# The script is deliberately POSIX sh: a fresh machine only needs curl and git.
+# The script is deliberately POSIX sh. On Linux, a fresh machine only needs
+# curl plus a supported package manager; Git and the remaining tools are
+# installed before the repository is cloned.
 
 set -eu
 
@@ -231,6 +233,33 @@ case "$(uname -s)" in
   *) die "supported platforms are macOS and Linux" ;;
 esac
 
+install_linux_system_packages() {
+  [ "$PLATFORM" = linux ] || return 0
+  [ "$INSTALL_PACKAGES" -eq 1 ] || return 0
+
+  say "Installing Linux system packages"
+  if command -v apt-get >/dev/null 2>&1; then
+    as_root apt-get update
+    as_root apt-get install -y git curl tmux fzf ripgrep jq xclip unzip build-essential
+  elif command -v pacman >/dev/null 2>&1; then
+    as_root pacman -S --needed --noconfirm git curl tmux fzf ripgrep jq xclip unzip base-devel
+  elif command -v dnf >/dev/null 2>&1; then
+    as_root dnf install -y git curl tmux fzf ripgrep jq xclip unzip gcc gcc-c++ make
+  else
+    die "unsupported Linux package manager; install Git first or rerun from an existing checkout with --config-only"
+  fi
+
+  hash -r 2>/dev/null || true
+  command -v git >/dev/null 2>&1 || die "Git installation completed, but git is not on PATH"
+  command -v curl >/dev/null 2>&1 || die "curl installation completed, but curl is not on PATH"
+  command -v cc >/dev/null 2>&1 || die "compiler installation completed, but cc is not on PATH"
+  command -v unzip >/dev/null 2>&1 || die "unzip installation completed, but unzip is not on PATH"
+}
+
+# A piped install has not cloned the repository yet. Install Git and the other
+# Linux system packages first so a minimal image can reach the clone step.
+install_linux_system_packages
+
 # When run from a checkout, use that checkout. When piped from curl, clone one.
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" 2>/dev/null && pwd || true)
 if [ -n "$SCRIPT_DIR" ] && [ -f "$SCRIPT_DIR/bootstrap.sh" ] && [ -f "$SCRIPT_DIR/profiles/common" ]; then
@@ -261,17 +290,8 @@ install_packages() {
       run brew bundle --file "$REPO_DIR/packages/Brewfile"
       ;;
     linux)
-      # Package names are kept here because they differ by distribution.
-      if command -v apt-get >/dev/null 2>&1; then
-        as_root apt-get update
-        as_root apt-get install -y git curl tmux fzf ripgrep jq xclip unzip build-essential
-      elif command -v pacman >/dev/null 2>&1; then
-        as_root pacman -S --needed git curl tmux fzf ripgrep jq xclip unzip base-devel
-      elif command -v dnf >/dev/null 2>&1; then
-        as_root dnf install -y git curl tmux fzf ripgrep jq xclip unzip gcc gcc-c++ make
-      else
-        die "unsupported Linux package manager; rerun with --config-only and install packages listed in docs/bootstrap.md"
-      fi
+      # Version-sensitive tools use upstream release archives instead of the
+      # distribution packages, which are often too old for this configuration.
       install_current_neovim_linux
       install_tree_sitter_linux
       ;;
