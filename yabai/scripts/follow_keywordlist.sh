@@ -1,0 +1,1 @@
+../../scripts/yabai/follow_keywordlist.sh

@@ -1,0 +1,1 @@
+../../scripts/sketchybar/input_method.sh

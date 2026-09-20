@@ -1,0 +1,24 @@
+#!/bin/bash
+export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+bar="$HOME/.local/bin/focus_bar"
+timer="/usr/bin/python3 $HOME/.config/scripts/things/things_now_session.py"
+rm -f "$HOME/.local/share/things-now-sessions/render.json" "$HOME/.cache/focus_bar/layout" "$HOME/.cache/focus_bar/task_chars"
+"$bar" --bar position=top y_offset=0 height=32 color=0xff171c24 padding_left=18 padding_right=18 \
+  sticky=on topmost=window shadow=off corner_radius=0 display=all \
+  --default icon.drawing=off label.font="SF Pro:Medium:12.0" label.color=0xffc0caf5 \
+  padding_left=8 padding_right=8 background.drawing=off
+"$bar" --add item focus.project left --set focus.project label=NOW label.color=0xff929baa label.font="SF Pro:Semibold:11.0" click_script="/usr/bin/python3 $HOME/.config/scripts/things/things_now.py show" \
+  --add item focus.status left --set focus.status label=待编排 label.color=0xff929baa \
+  --add item focus.task left --set focus.task label="n 编排任务 · 点击开始后计时" label.font="SF Pro:Semibold:13.0" label.max_chars=120 scroll_texts=off click_script="/usr/bin/python3 $HOME/.config/scripts/things/things_now.py show" \
+  --add item focus.start right --set focus.start label=开始 label.color=0xff9ece6a drawing=off click_script="$timer start" \
+  --add item focus.report right --set focus.report label=日志 label.color=0xff929baa click_script="$timer report" \
+  --add item focus.clock right --set focus.clock label=60:00 label.font="SF Mono:Medium:13.0" label.width=76 label.align=right \
+  --add slider focus.progress right 100 --set focus.progress label.drawing=off slider.percentage=100 slider.knob.drawing=off slider.background.height=5 slider.background.color=0xff303846 slider.background.corner_radius=3 slider.highlight_color=0xff9ece6a \
+  --add item focus.tick left --set focus.tick drawing=off updates=on update_freq=1 script="$timer tick" \
+  --subscribe focus.tick system_woke \
+  --add item focus.sync left --set focus.sync drawing=off updates=on update_freq=2 script="$timer sync" \
+  --subscribe focus.sync system_woke \
+  --add item focus.layout left --set focus.layout drawing=off updates=on update_freq=5 script="$HOME/.config/scripts/sketchybar/focus_layout.sh" \
+  --subscribe focus.layout display_change space_change
+"$HOME/.config/scripts/sketchybar/focus_layout.sh"
+$timer sync

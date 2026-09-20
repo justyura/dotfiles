@@ -1,0 +1,1 @@
+../../scripts/yabai/workspace_history.sh

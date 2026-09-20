@@ -1,0 +1,1 @@
+../../scripts/sketchybar/calendar.sh

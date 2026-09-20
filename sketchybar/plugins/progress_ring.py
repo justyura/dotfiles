@@ -1,0 +1,1 @@
+../../scripts/sketchybar/progress_ring.py

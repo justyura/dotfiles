@@ -1,0 +1,1 @@
+../../scripts/sketchybar/helpers/build_presence.sh

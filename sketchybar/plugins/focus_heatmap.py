@@ -1,0 +1,1 @@
+../../scripts/sketchybar/focus_heatmap.py

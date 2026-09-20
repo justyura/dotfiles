@@ -1,0 +1,560 @@
+#!/bin/bash
+
+BAR_COLOR=0xff1a1b26
+ACCENT_COLOR=0xff9ece6a
+WHITE=0xffc0caf5
+PLUGIN_DIR="$HOME/.config/scripts/sketchybar"
+
+sketchybar --bar \
+  height=56 \
+  blur_radius=0 \
+  position=left \
+  sticky=on \
+  padding_left=10 \
+  padding_right=10 \
+  color=$BAR_COLOR \
+  corner_radius=0
+
+# ===== Zen Mode =====
+# 点击只留任务块和站立计时，其余 item 全部隐藏；再点一次还原（状态和还原名单见 plugins/zen.sh）
+
+sketchybar --add item zen left \
+  --set zen \
+    icon="󱅻" \
+    icon.font="Hack Nerd Font:Regular:17.0" \
+    icon.color=0xff565f89 \
+    icon.width=56 \
+    icon.align=center \
+    label.drawing=off \
+    background.drawing=off \
+    padding_left=0 \
+    padding_right=0 \
+    click_script="$PLUGIN_DIR/zen.sh toggle"
+
+# ===== PhotoShare Clipboard Upload =====
+
+sketchybar --add item photoshare_upload left \
+  --set photoshare_upload \
+    icon="↑" \
+    icon.font="SF Pro:Bold:17.0" \
+    icon.color=0xff929baa \
+    icon.width=56 \
+    icon.align=center \
+    label.drawing=off \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.corner_radius=5 \
+    background.height=28 \
+    padding_left=0 \
+    padding_right=0 \
+    click_script="$HOME/.local/bin/photoshare-upload-clipboard"
+
+# ===== Spaces =====
+
+SPACE_ARGS=()
+for i in {1..10}; do
+  SPACE_ARGS+=(
+    --add item "space.$i" left
+    --set "space.$i"
+      icon=$i
+      icon.font="SF Pro:Medium:13.0"
+      icon.color=0xff929baa
+      icon.highlight_color=0xffe0e5ec
+      label.drawing=off
+      background.drawing=on
+      background.color=0x00292e42
+      background.corner_radius=5
+      background.height=24
+      icon.padding_left=6
+      icon.padding_right=6
+      padding_left=4
+      padding_right=4
+      click_script="$PLUGIN_DIR/space_focus.sh $i"
+  )
+done
+sketchybar "${SPACE_ARGS[@]}"
+
+sketchybar --add event space_change \
+  --set space.1 script="$PLUGIN_DIR/space.sh" \
+  --subscribe space.1 space_change space_windows_change mouse.clicked mouse.entered mouse.exited
+for i in $(seq 2 10); do
+  sketchybar --set "space.$i" script="$PLUGIN_DIR/hover.sh" \
+    --subscribe "space.$i" mouse.clicked mouse.entered mouse.exited
+done
+
+# ===== Front App =====
+
+sketchybar --add item front_app left \
+  --set front_app \
+    icon.drawing=off \
+    label.font="SF Pro:Semibold:14.0" \
+    label.color=$WHITE \
+    background.color=0xff292e42 \
+    background.corner_radius=5 \
+    background.height=24 \
+    script="$PLUGIN_DIR/front_app.sh" \
+  --subscribe front_app front_app_switched
+
+# ===== Clock =====
+
+sketchybar \
+  --add item calendar right \
+  --set calendar \
+    update_freq=30 \
+    updates=when_shown \
+    icon.drawing=off \
+    label.font="SF Pro:Semibold:15.0" \
+    label.color=$WHITE \
+    background.drawing=off \
+    padding_left=12 \
+    script="$PLUGIN_DIR/calendar.sh" \
+  --subscribe calendar system_woke
+
+# ===== Input Method =====
+# 时钟左侧：中 / 英（鼠须管内部模式，Rime 的 lua/ascii_status.lua 触发 input_method_change）/ US（系统输入法被切到 U.S.）
+# 点击：US 时切回鼠须管；鼠须管里切换中英（input_method.sh）
+
+sketchybar \
+  --add event input_source_change AppleSelectedInputSourcesChangedNotification \
+  --add event input_method_change \
+  --add item input_method right \
+  --set input_method \
+    icon.drawing=off \
+    label.font="SF Pro:Semibold:13.0" \
+    label.color=$WHITE \
+    label.width=30 \
+    label.align=center \
+    padding_left=0 \
+    padding_right=0 \
+    script="$PLUGIN_DIR/input_method.sh" \
+  --subscribe input_method input_source_change input_method_change front_app_switched system_woke \
+    mouse.clicked mouse.entered mouse.exited \
+  --add bracket input_method.bracket input_method \
+  --set input_method.bracket \
+    background.color=0xff292e42 \
+    background.border_width=1 \
+    background.border_color=0xff292e42 \
+    background.corner_radius=5 \
+    background.height=24 \
+  --add item input_method.gap right \
+  --set input_method.gap width=10 icon.drawing=off label.drawing=off
+
+# ===== Project Tasks =====
+# 居中：[Things 图标 / 当前 tmux project / 进度圆环（走满 = 今天这个项目清空了）]
+# 点击弹出同名 Things 3 项目的待办清单；勾选、右键打开和键盘导航逻辑保持不变
+
+sketchybar \
+  --add event tmux_project_changed \
+  --add item timeline.things center \
+  --set timeline.things \
+    icon=" " \
+    icon.drawing=on \
+    icon.width=56 \
+    icon.align=center \
+    icon.background.drawing=on \
+    icon.background.image="app.com.culturedcode.ThingsMac" \
+    icon.background.image.scale=0.72 \
+    label.drawing=off \
+    padding_left=0 \
+    padding_right=0 \
+    background.drawing=off \
+    click_script="$PLUGIN_DIR/day_timeline.sh" \
+  --subscribe timeline.things mouse.clicked mouse.entered mouse.exited mouse.exited.global \
+  --add item timeline.project center \
+  --set timeline.project \
+    icon.drawing=off \
+    label.color=$WHITE \
+    script="$PLUGIN_DIR/day_timeline.sh" \
+  --subscribe timeline.project mouse.clicked mouse.entered mouse.exited mouse.exited.global \
+  --add item timeline center \
+  --set timeline \
+    update_freq=30 \
+    updates=when_shown \
+    icon.font="SF Pro:Semibold:13.0" \
+    icon.color=$WHITE \
+    icon.padding_left=12 \
+    icon.padding_right=8 \
+    label.font="SF Pro:Bold:13.0" \
+    label.color=$ACCENT_COLOR \
+    label.padding_left=0 \
+    label.padding_right=12 \
+    padding_left=0 \
+    padding_right=0 \
+    popup.align=center \
+    popup.y_offset=4 \
+    popup.background.color=0xd91a1b26 \
+    popup.blur_radius=24 \
+    popup.background.corner_radius=12 \
+    popup.background.border_width=1 \
+    popup.background.border_color=0xff3b4261 \
+    popup.background.shadow.drawing=on \
+    popup.background.shadow.color=0x80000000 \
+    popup.background.shadow.distance=8 \
+    popup.background.shadow.angle=90 \
+    script="$PLUGIN_DIR/day_timeline.sh" \
+  --subscribe timeline system_woke tmux_project_changed mouse.clicked mouse.entered mouse.exited mouse.exited.global \
+  --add item agents.switcher center \
+  --set agents.switcher \
+    icon="󰊩" \
+    icon.drawing=on \
+    icon.font="Hack Nerd Font:Bold:17.0" \
+    icon.color=$WHITE \
+    icon.width=56 \
+    icon.align=center \
+    label.drawing=off \
+    padding_left=0 \
+    padding_right=0 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.height=30 \
+    popup.align=center \
+    popup.y_offset=4 \
+    popup.background.color=$BAR_COLOR \
+    popup.background.corner_radius=10 \
+    popup.background.border_width=1 \
+    popup.background.border_color=0xff3b4261 \
+    popup.background.padding_left=6 \
+    popup.background.padding_right=6 \
+    click_script="/opt/homebrew/bin/skhd -k 'alt - a'" \
+  --add bracket timeline.bracket timeline \
+  --set timeline.bracket \
+    background.color=0xff30364f \
+    background.border_width=1 \
+    background.border_color=0xff565f89 \
+    background.corner_radius=7 \
+    background.height=30
+
+# ===== Standup Reminder =====
+# 自动活动计时：键鼠空闲暂停，相机仅在空闲时校准是否有人；单击开关面板。
+# 悬停在下方弹出专注热力图（数据由 standup.sh 累计，图由 focus_heatmap.py 生成）
+# updates=on：bar 默认隐藏，隐藏时也要继续计时和响铃
+
+sketchybar \
+  --add item standup right \
+  --set standup \
+    position=left \
+    update_freq=5 \
+    updates=on \
+    icon.drawing=off \
+    label.font="SF Pro:Semibold:11.0" \
+    label.width=42 \
+    label.align=left \
+    label.padding_left=0 \
+    label.padding_right=0 \
+    padding_left=0 \
+    padding_right=0 \
+    popup.align=right \
+    popup.y_offset=4 \
+    popup.background.color=$BAR_COLOR \
+    popup.background.corner_radius=8 \
+    popup.background.border_width=1 \
+    popup.background.border_color=0xff292e42 \
+    script="$PLUGIN_DIR/standup.sh" \
+  --subscribe standup system_woke mouse.clicked mouse.entered mouse.exited mouse.exited.global \
+  --add item standup.bar right \
+  --set standup.bar \
+    position=left \
+    icon.font="SF Pro:Bold:9.0" \
+    icon.width=58 \
+    icon.align=center \
+    icon.padding_left=0 \
+    icon.padding_right=0 \
+    label.drawing=off \
+    background.image.scale=0.5 \
+    padding_left=0 \
+    padding_right=8 \
+    script="$PLUGIN_DIR/standup.sh" \
+  --subscribe standup.bar mouse.clicked mouse.entered mouse.exited \
+  --add bracket standup.bracket standup.bar standup \
+  --set standup.bracket \
+    background.color=0xff292e42 \
+    background.border_width=1 \
+    background.border_color=0xff292e42 \
+    background.corner_radius=5 \
+    background.height=24 \
+  --add item standup.gap right \
+  --set standup.gap width=10 icon.drawing=off label.drawing=off # 与左侧 AI 用量底块隔开（bracket 会吃掉成员 padding）
+
+# 热力图弹窗：标题 / 热力图（PNG，按 2x 生成）/ 摘要
+sketchybar \
+  --add item standup.heatmap.title popup.standup \
+  --set standup.heatmap.title \
+    icon.drawing=off \
+    label.font="SF Pro:Semibold:12.0" \
+    label.color=$WHITE \
+    padding_left=12 \
+    padding_right=12 \
+  --add item standup.heatmap popup.standup \
+  --set standup.heatmap \
+    icon.drawing=off \
+    label.drawing=off \
+    background.drawing=on \
+    background.image.scale=0.5 \
+    padding_left=12 \
+    padding_right=12 \
+  --add item standup.heatmap.summary popup.standup \
+  --set standup.heatmap.summary \
+    icon.drawing=off \
+    label.font="SF Pro:Medium:11.0" \
+    label.color=0xff737aa2 \
+    padding_left=12 \
+    padding_right=12 \
+  --add item standup.history popup.standup \
+  --set standup.history icon.drawing=off label="每日活动时间线 ↗" \
+    label.font="SF Pro:Medium:12.0" label.color=0xffb7d69a \
+    padding_left=12 padding_right=12 \
+    click_script="'$PLUGIN_DIR/standup.sh' history" \
+    script="$PLUGIN_DIR/standup.sh" \
+  --subscribe standup.history mouse.entered mouse.exited \
+  --add item standup.break popup.standup \
+  --set standup.break icon.drawing=off label="开始休息" label.font="SF Pro:Semibold:12.0" \
+    label.color=0xff88b5d4 padding_left=12 padding_right=12 \
+    click_script="'$PLUGIN_DIR/standup.sh' break" script="$PLUGIN_DIR/standup.sh" \
+  --subscribe standup.break mouse.entered mouse.exited \
+  --add item standup.close popup.standup \
+  --set standup.close icon.drawing=off label="关闭 ×" label.font="SF Pro:Medium:12.0" \
+    label.color=0xffc0caf5 padding_left=12 padding_right=12 \
+    click_script="'$PLUGIN_DIR/standup.sh' close" script="$PLUGIN_DIR/standup.sh" \
+  --subscribe standup.close mouse.entered mouse.exited
+for item in standup.heatmap.title standup.heatmap standup.heatmap.summary; do
+  sketchybar --set "$item" script="$PLUGIN_DIR/standup.sh" \
+    --subscribe "$item" mouse.entered mouse.exited
+done
+
+# ===== Claude Code / ChatGPT =====
+# 竖向顺序：app 图标 → 5h/7d 双竖条 → 两列重置倒计时。
+# $id 挂载透明 PNG 竖条和刷新脚本；$id.reset_5h 承载两列倒计时。
+#
+# 每个 app 图标旁的小徽标独立统计该 provider 的 Agent 数量与最高优先级状态。
+# 全局会话选择器是中央区域的独立 agents.switcher，Things 项目及其弹窗保持不变。
+
+sketchybar --add event agent_status_change
+sketchybar --add event claude_usage_updated
+
+for provider in codex:com.openai.codex claude:com.anthropic.claudefordesktop; do
+  id="${provider%%:*}_usage"
+
+  sketchybar \
+    --add item "$id" right \
+    --set "$id" \
+      update_freq=60 \
+      updates=when_shown \
+      icon.drawing=off \
+      label.drawing=off \
+      padding_left=0 \
+      padding_right=0 \
+      background.drawing=on \
+      background.color=0x00000000 \
+      background.height=64 \
+      background.image.scale=0.5 \
+      script="$PLUGIN_DIR/ai_usage.sh" \
+    --subscribe "$id" system_woke \
+    --add item "$id.reset_5h" right \
+    --set "$id.reset_5h" \
+      padding_left=0 \
+      padding_right=3 \
+      icon.drawing=on \
+      icon.font="SF Pro:Semibold:7.0" \
+      icon.width=26 \
+      icon.align=center \
+      label.drawing=on \
+      label.font="SF Pro:Semibold:7.0" \
+      label.width=26 \
+      label.align=center \
+      background.drawing=on \
+      background.color=0x00000000 \
+      background.height=12 \
+    --add item "$id.logo" right \
+    --set "$id.logo" \
+      icon.drawing=on \
+      icon=" " \
+      icon.width=32 \
+      icon.align=center \
+      icon.background.drawing=on \
+      icon.background.image="app.${provider#*:}" \
+      icon.background.image.scale=0.65 \
+      label.drawing=on \
+      label.font="SF Pro:Bold:10.0" \
+      label.width=20 \
+      label.align=center \
+      label.padding_left=0 \
+      label.padding_right=0 \
+      padding_left=2 \
+      padding_right=2 \
+      background.drawing=on \
+      background.color=0x00000000 \
+      background.height=32 \
+      script="$PLUGIN_DIR/agent_provider.sh" \
+    --subscribe "$id.logo" agent_status_change system_woke mouse.clicked
+done
+
+sketchybar --subscribe claude_usage claude_usage_updated
+
+# ===== Vertical Bar Layout =====
+# 竖向原生布局：文字、进度和状态拆成上下多行，不再压缩横向胶囊。
+sketchybar \
+  --set space.1 background.height=32 \
+  --set space.2 background.height=32 \
+  --set space.3 background.height=32 \
+  --set space.4 background.height=32 \
+  --set space.5 background.height=32 \
+  --set space.6 background.height=32 \
+  --set space.7 background.height=32 \
+  --set space.8 background.height=32 \
+  --set space.9 background.height=32 \
+  --set space.10 background.height=32 \
+  --set front_app \
+    label.drawing=off \
+    icon=" " \
+    icon.drawing=on \
+    icon.width=28 \
+    icon.background.drawing=on \
+    icon.background.image.scale=0.55 \
+    background.drawing=on \
+    background.height=40 \
+    padding_left=4 \
+    padding_right=4 \
+  --set timeline.project \
+    icon.drawing=off \
+    label.font="SF Pro:Bold:12.0" \
+    label.color=0xffe6ebff \
+    label.max_chars=7 \
+    label.width=56 \
+    label.align=center \
+    label.padding_left=0 \
+    label.padding_right=0 \
+    padding_left=2 \
+    padding_right=2 \
+    background.drawing=on \
+    background.color=0xff30364f \
+    background.border_width=1 \
+    background.border_color=0xff6b76a8 \
+    background.corner_radius=7 \
+    background.height=28 \
+  --set timeline.things \
+    icon.width=56 \
+    icon.align=center \
+    icon.background.image.scale=0.72 \
+    padding_left=0 \
+    padding_right=2 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.height=40 \
+  --set agents.switcher \
+    icon.width=56 \
+    icon.align=center \
+    padding_left=0 \
+    padding_right=2 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.height=30 \
+  --set timeline \
+    icon.drawing=off \
+    label.drawing=off \
+    padding_left=2 \
+    padding_right=2 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.border_width=0 \
+    background.corner_radius=0 \
+    background.height=30 \
+    background.image.scale=0.5 \
+  --set timeline.bracket drawing=off \
+  --set input_method \
+    label.width=32 \
+    background.drawing=off \
+    padding_left=2 \
+    padding_right=2 \
+    background.height=36 \
+  --set input_method.bracket drawing=off \
+  --set input_method.gap drawing=off \
+  --set standup \
+    position=left \
+    icon.drawing=off \
+    label.width=48 \
+    label.align=center \
+    label.font="SF Pro:Semibold:10.0" \
+    padding_left=0 \
+    padding_right=3 \
+    background.drawing=off \
+    background.height=20 \
+  --set standup.bar \
+    position=left \
+    drawing=on \
+    icon.font="SF Pro:Bold:9.0" \
+    icon.width=12 \
+    icon.padding_left=2 \
+    icon.padding_right=2 \
+    label.drawing=off \
+    padding_left=3 \
+    padding_right=1 \
+  --set standup.bracket drawing=off \
+  --set standup.gap drawing=off \
+  --set codex_usage \
+    icon.drawing=off \
+    label.drawing=off \
+    y_offset=0 \
+    padding_left=0 \
+    padding_right=0 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.height=64 \
+    background.image.scale=0.5 \
+  --set codex_usage.reset_5h drawing=on y_offset=0 icon.padding_left=0 icon.padding_right=0 label.padding_left=0 label.padding_right=0 \
+  --set codex_usage.logo drawing=on icon=" " icon.drawing=on icon.width=32 icon.align=center icon.background.drawing=on icon.background.image.scale=0.65 label.drawing=on label.font="SF Pro:Bold:10.0" label.width=20 label.align=center label.padding_left=0 label.padding_right=0 padding_left=2 padding_right=2 background.drawing=on background.color=0x00000000 background.height=32 \
+  --set claude_usage \
+    icon.drawing=off \
+    label.drawing=off \
+    y_offset=0 \
+    padding_left=0 \
+    padding_right=0 \
+    background.drawing=on \
+    background.color=0x00000000 \
+    background.height=64 \
+    background.image.scale=0.5 \
+  --set claude_usage.reset_5h drawing=on y_offset=0 icon.padding_left=0 icon.padding_right=0 label.padding_left=0 label.padding_right=0 \
+  --set claude_usage.logo drawing=on icon=" " icon.drawing=on icon.width=32 icon.align=center icon.background.drawing=on icon.background.image.scale=0.65 label.drawing=on label.font="SF Pro:Bold:10.0" label.width=20 label.align=center label.padding_left=0 label.padding_right=0 padding_left=2 padding_right=2 background.drawing=on background.color=0x00000000 background.height=32 \
+  --set calendar \
+    label.font="SF Pro:Bold:11.0" \
+    label.width=44 \
+    label.align=center \
+    padding_left=0 \
+    padding_right=4
+
+# 统一视觉节奏：组间留白、轻量项目底色、图标等大、倒计时降为次要信息。
+sketchybar \
+  --set timeline.project background.border_width=0 background.color=0xff242d2b label.color=0xffb7d69a label.width=48 label.font="SF Pro:Semibold:12.0" \
+  --set timeline.things drawing=off \
+  --set agents.switcher padding_left=18 padding_right=4 icon.color=0xff929baa icon.font="Hack Nerd Font:Regular:17.0" \
+  --set standup.bar padding_left=14 icon.drawing=off background.image.scale=0.5 background.drawing=on background.color=0x00000000 background.height=18 \
+  --set standup label.font="SF Pro:Semibold:12.0" background.drawing=on background.color=0x00000000 background.height=24 \
+  --set front_app background.color=0x00000000 padding_left=10 icon.background.image.scale=0.6 icon.width=48 \
+  --set calendar label.color=0xff929baa label.font="SF Pro:Medium:10.0"
+for i in {1..10}; do
+  sketchybar --set "space.$i" background.height=28 background.corner_radius=5
+done
+for provider in claude codex; do
+  sketchybar \
+    --set "${provider}_usage.logo" icon.drawing=off icon.background.drawing=off label.width=52 label.font="SF Pro:Medium:10.0" background.height=22 \
+    --set "${provider}_usage" background.height=52 \
+    --set "${provider}_usage.reset_5h" icon.font="SF Pro:Medium:8.0" label.font="SF Pro:Medium:8.0" background.height=14 padding_right=16
+done
+
+# right 区域从底部向上排列，每个 AI 组显示为：图标+独立 Agent 状态 → 双竖条 → 双列重置时间。
+sketchybar --reorder \
+  codex_usage.reset_5h codex_usage codex_usage.logo \
+  claude_usage.reset_5h claude_usage claude_usage.logo
+
+# 顶部组：工作区数字 → 站立进度 → 当前 app；中央组是 Things 项目，下方独立 Agent 管理器。
+sketchybar --reorder \
+  zen photoshare_upload space.1 space.2 space.3 space.4 space.5 space.6 space.7 space.8 space.9 space.10 \
+  standup.bar standup front_app \
+  timeline.things timeline.project timeline agents.switcher
+
+"$PLUGIN_DIR/zen.sh" apply
+
+sketchybar --update
+
+# 默认隐藏，alt+w 按需呼出（状态文件与 toggle_top_padding.sh 共用）
+sketchybar --bar hidden=true
+touch /tmp/yabai_top_padding_hidden

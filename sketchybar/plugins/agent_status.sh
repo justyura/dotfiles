@@ -1,0 +1,1 @@
+../../scripts/sketchybar/agent_status.sh

@@ -1,0 +1,55 @@
+{
+    "profiles": [
+        {
+            "complex_modifications": {
+                "rules": [
+                    {
+                        "description": "单击右 Option → Things 浮窗；组合键保留 Option",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": {
+                                    "key_code": "right_option",
+                                    "modifiers": { "optional": ["any"] }
+                                },
+                                "to": [{ "key_code": "right_option", "lazy": true }],
+                                "to_if_alone": [{ "key_code": "f16" }],
+                                "to_if_held_down": [{ "key_code": "right_option" }],
+                                "parameters": {
+                                    "basic.to_if_alone_timeout_milliseconds": 300,
+                                    "basic.to_if_held_down_threshold_milliseconds": 300
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "description": "单独按 🌐/fn → 右 Control（切换鼠须管中英）；按住组合时仍是 fn",
+                        "manipulators": [
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "fn" },
+                                "conditions": [{
+                                    "type": "input_source_unless",
+                                    "input_sources": [{ "input_source_id": "^im\\.rime\\.inputmethod\\.Squirrel.*" }]
+                                }],
+                                "to": [{ "key_code": "fn", "lazy": true }],
+                                "to_if_alone": [{ "select_input_source": {
+                                    "input_source_id": "^im\\.rime\\.inputmethod\\.Squirrel\\.Hans$"
+                                } }]
+                            },
+                            {
+                                "type": "basic",
+                                "from": { "key_code": "fn" },
+                                "to": [{ "key_code": "fn", "lazy": true }],
+                                "to_if_alone": [{ "key_code": "right_control" }]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "name": "Default profile",
+            "selected": true,
+            "virtual_hid_keyboard": { "keyboard_type_v2": "ansi" }
+        }
+    ]
+}

@@ -1,0 +1,78 @@
+# / 跳转模式（things_nav.sh jump 系列动作）：按键直接由 skhd 捕获，不开输入框 ——
+# 输入框是独立 app 的面板，从按下 / 到它拿到键盘焦点要 380ms，这段时间的按键会丢或漏给下层应用。
+# 查询串显示在弹窗标题行上。由 skhdrc 的 .load 引入；模式内没绑定的键会漏给下层应用，
+# 所以大小写字母、数字、空格、退格都要列全。
+
+thingsjump < escape : ~/.config/scripts/things/things_nav.sh jumpcancel
+thingsjump < return : ~/.config/scripts/things/things_nav.sh jumpaccept
+thingsjump < backspace : ~/.config/scripts/things/things_nav.sh jumpkey BS
+thingsjump < space : ~/.config/scripts/things/things_nav.sh jumpkey SP
+thingsjump < down : ~/.config/scripts/things/things_nav.sh jumpmove down
+thingsjump < up : ~/.config/scripts/things/things_nav.sh jumpmove up
+thingsjump < ctrl - n : ~/.config/scripts/things/things_nav.sh jumpmove down
+thingsjump < ctrl - p : ~/.config/scripts/things/things_nav.sh jumpmove up
+
+thingsjump < a : ~/.config/scripts/things/things_nav.sh jumpkey a
+thingsjump < b : ~/.config/scripts/things/things_nav.sh jumpkey b
+thingsjump < c : ~/.config/scripts/things/things_nav.sh jumpkey c
+thingsjump < d : ~/.config/scripts/things/things_nav.sh jumpkey d
+thingsjump < e : ~/.config/scripts/things/things_nav.sh jumpkey e
+thingsjump < f : ~/.config/scripts/things/things_nav.sh jumpkey f
+thingsjump < g : ~/.config/scripts/things/things_nav.sh jumpkey g
+thingsjump < h : ~/.config/scripts/things/things_nav.sh jumpkey h
+thingsjump < i : ~/.config/scripts/things/things_nav.sh jumpkey i
+thingsjump < j : ~/.config/scripts/things/things_nav.sh jumpkey j
+thingsjump < k : ~/.config/scripts/things/things_nav.sh jumpkey k
+thingsjump < l : ~/.config/scripts/things/things_nav.sh jumpkey l
+thingsjump < m : ~/.config/scripts/things/things_nav.sh jumpkey m
+thingsjump < n : ~/.config/scripts/things/things_nav.sh jumpkey n
+thingsjump < o : ~/.config/scripts/things/things_nav.sh jumpkey o
+thingsjump < p : ~/.config/scripts/things/things_nav.sh jumpkey p
+thingsjump < q : ~/.config/scripts/things/things_nav.sh jumpkey q
+thingsjump < r : ~/.config/scripts/things/things_nav.sh jumpkey r
+thingsjump < s : ~/.config/scripts/things/things_nav.sh jumpkey s
+thingsjump < t : ~/.config/scripts/things/things_nav.sh jumpkey t
+thingsjump < u : ~/.config/scripts/things/things_nav.sh jumpkey u
+thingsjump < v : ~/.config/scripts/things/things_nav.sh jumpkey v
+thingsjump < w : ~/.config/scripts/things/things_nav.sh jumpkey w
+thingsjump < x : ~/.config/scripts/things/things_nav.sh jumpkey x
+thingsjump < y : ~/.config/scripts/things/things_nav.sh jumpkey y
+thingsjump < z : ~/.config/scripts/things/things_nav.sh jumpkey z
+
+thingsjump < shift - a : ~/.config/scripts/things/things_nav.sh jumpkey a
+thingsjump < shift - b : ~/.config/scripts/things/things_nav.sh jumpkey b
+thingsjump < shift - c : ~/.config/scripts/things/things_nav.sh jumpkey c
+thingsjump < shift - d : ~/.config/scripts/things/things_nav.sh jumpkey d
+thingsjump < shift - e : ~/.config/scripts/things/things_nav.sh jumpkey e
+thingsjump < shift - f : ~/.config/scripts/things/things_nav.sh jumpkey f
+thingsjump < shift - g : ~/.config/scripts/things/things_nav.sh jumpkey g
+thingsjump < shift - h : ~/.config/scripts/things/things_nav.sh jumpkey h
+thingsjump < shift - i : ~/.config/scripts/things/things_nav.sh jumpkey i
+thingsjump < shift - j : ~/.config/scripts/things/things_nav.sh jumpkey j
+thingsjump < shift - k : ~/.config/scripts/things/things_nav.sh jumpkey k
+thingsjump < shift - l : ~/.config/scripts/things/things_nav.sh jumpkey l
+thingsjump < shift - m : ~/.config/scripts/things/things_nav.sh jumpkey m
+thingsjump < shift - n : ~/.config/scripts/things/things_nav.sh jumpkey n
+thingsjump < shift - o : ~/.config/scripts/things/things_nav.sh jumpkey o
+thingsjump < shift - p : ~/.config/scripts/things/things_nav.sh jumpkey p
+thingsjump < shift - q : ~/.config/scripts/things/things_nav.sh jumpkey q
+thingsjump < shift - r : ~/.config/scripts/things/things_nav.sh jumpkey r
+thingsjump < shift - s : ~/.config/scripts/things/things_nav.sh jumpkey s
+thingsjump < shift - t : ~/.config/scripts/things/things_nav.sh jumpkey t
+thingsjump < shift - u : ~/.config/scripts/things/things_nav.sh jumpkey u
+thingsjump < shift - v : ~/.config/scripts/things/things_nav.sh jumpkey v
+thingsjump < shift - w : ~/.config/scripts/things/things_nav.sh jumpkey w
+thingsjump < shift - x : ~/.config/scripts/things/things_nav.sh jumpkey x
+thingsjump < shift - y : ~/.config/scripts/things/things_nav.sh jumpkey y
+thingsjump < shift - z : ~/.config/scripts/things/things_nav.sh jumpkey z
+
+thingsjump < 0 : ~/.config/scripts/things/things_nav.sh jumpkey 0
+thingsjump < 1 : ~/.config/scripts/things/things_nav.sh jumpkey 1
+thingsjump < 2 : ~/.config/scripts/things/things_nav.sh jumpkey 2
+thingsjump < 3 : ~/.config/scripts/things/things_nav.sh jumpkey 3
+thingsjump < 4 : ~/.config/scripts/things/things_nav.sh jumpkey 4
+thingsjump < 5 : ~/.config/scripts/things/things_nav.sh jumpkey 5
+thingsjump < 6 : ~/.config/scripts/things/things_nav.sh jumpkey 6
+thingsjump < 7 : ~/.config/scripts/things/things_nav.sh jumpkey 7
+thingsjump < 8 : ~/.config/scripts/things/things_nav.sh jumpkey 8
+thingsjump < 9 : ~/.config/scripts/things/things_nav.sh jumpkey 9

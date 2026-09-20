@@ -1,0 +1,1 @@
+../../scripts/sketchybar/day_timeline.sh

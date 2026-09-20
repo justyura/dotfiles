@@ -1,0 +1,1 @@
+../../scripts/sketchybar/test_activity_history.py

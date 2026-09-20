@@ -1,0 +1,1 @@
+../../scripts/sketchybar/standup_auto.py

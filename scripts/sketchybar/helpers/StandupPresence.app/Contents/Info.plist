@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleIdentifier</key><string>local.yura.standup-presence</string>
+<key>CFBundleName</key><string>Standup Presence</string>
+<key>CFBundleDisplayName</key><string>Standup Presence</string>
+<key>CFBundleExecutable</key><string>presence</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleVersion</key><string>1</string>
+<key>LSUIElement</key><true/>
+<key>NSCameraUsageDescription</key><string>无键鼠操作时短暂检查是否仍有人在阅读，用于校准休息提醒。画面只在本机处理，不保存、不上传。</string>
+</dict></plist>

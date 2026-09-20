@@ -1,0 +1,1 @@
+../../scripts/sketchybar/helpers/input_source.swift

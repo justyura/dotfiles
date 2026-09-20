@@ -1,0 +1,122 @@
+# navigation
+shift + alt - h : /opt/homebrew/bin/yabai -m window --focus west
+shift + alt - l : /opt/homebrew/bin/yabai -m window --focus east
+
+# zoom in & out
+alt - f : /opt/homebrew/bin/yabai -m window --toggle zoom-fullscreen
+## alt - f : /opt/homebrew/bin/yabai -m window --toggle native-fullscreen
+
+# bar
+alt - w : ~/.config/scripts/yabai/toggle_top_padding.sh
+alt - z : ~/.config/scripts/sketchybar/zen.sh toggle   # zen mode：只留任务块和站立计时
+# 单击右 Option 呼出 Things 原生浮窗，Escape 收起（Karabiner 转为 F16）。
+# 以下为旧清单键盘模式绑定，原生窗口不进入这些模式。
+#   things       普通模式：j/k 移动  J/K 调整顺序  alt+k 或 enter 完成/取消完成  o/O 下方/上方插入并输入
+#                alt+shift+k 标成 canceled  alt+shift+y 归档已完成/已取消
+#                / 模糊跳到别的项目  v 可视模式  esc 退出
+#   thingsv      可视模式：j/k 扩选  J/K 整块移动  alt+k 或 enter 批量完成/取消完成  d 删除  y 复制任务名到剪贴板  esc/v 回到普通模式
+#   （完成操作只改 Things 里的状态并原地刷新：不切换窗口、不关闭清单、光标不动）
+#   thingsinsert 输入中：键盘交给插入行上的输入框（things_nav.sh 用 f18 进出该模式）
+# 不阻塞键盘：模式内只接管下面绑定的键；按下其它任何打字键（things_passthrough）立即退出模式且按键照常输入；
+# 窗口/应用/空间切换（yabai 信号）或 30 秒无操作时也自动退出（things_nav.sh 发送 f19 回到默认模式）
+:: default : ~/.config/scripts/things/things_nav.sh leave; /bin/bash ~/.config/scripts/things/things_escape.sh --start
+:: things : ~/.config/scripts/things/things_nav.sh normal
+:: thingsv : ~/.config/scripts/things/things_nav.sh visual
+:: thingsinsert
+:: thingsjump : ~/.config/scripts/things/things_nav.sh jump
+# 右 Option 使用 Things 原生浮窗；旧清单模式保留供现有栏内入口使用。
+things < escape ; default
+things < v ; thingsv
+thingsv < escape ; things
+thingsv < v ; things
+things < f18 ; thingsinsert
+thingsinsert < f18 ; things
+things, thingsv, thingsinsert, thingsjump < f19 ; default
+thingsjump < f17 ; things          # 跳转结束（回车/esc）回到清单
+things, thingsv < j : ~/.config/scripts/things/things_nav.sh down
+things, thingsv < k : ~/.config/scripts/things/things_nav.sh up
+things, thingsv < shift - j : ~/.config/scripts/things/things_nav.sh move_down
+things, thingsv < shift - k : ~/.config/scripts/things/things_nav.sh move_up
+things, thingsv < return : ~/.config/scripts/things/things_nav.sh toggle
+things, thingsv < alt - k : ~/.config/scripts/things/things_nav.sh toggle
+things, thingsv < shift + alt - k : ~/.config/scripts/things/things_nav.sh cancel    # 标成 canceled（这条不做了）
+things, thingsv < shift + alt - y : ~/.config/scripts/things/things_nav.sh archive   # 已完成/已取消的归档进 Logbook
+things < 0x2C ; thingsjump   # / 模糊跳到别的 Things 项目（按键由 skhd 直接接管，见 skhd/things_jump）
+things < o : ~/.config/scripts/things/things_nav.sh insert below
+things < shift - o : ~/.config/scripts/things/things_nav.sh insert above
+thingsv < d : ~/.config/scripts/things/things_nav.sh delete
+thingsv < y : ~/.config/scripts/things/things_nav.sh yank
+.load "things_passthrough"
+.load "things_jump"
+# a = agent：Option+A 弹出会话列表并进入选择模式；
+#   j/k 上下选择，Enter 跳转到对应空间/tmux pane，Esc 取消。
+:: agents : ~/.config/scripts/sketchybar/agent_switch.sh open
+default, things, thingsv, thingsinsert, thingsjump, agents < f16 : /bin/bash ~/.config/scripts/things/toggle_things.sh
+# Escape is handled synchronously by things_escape --watch; no skhd binding.
+# Control + right Option: add a task to the current Canvas project.
+default, things, thingsv, thingsinsert, thingsjump, agents < ctrl - f16 : /usr/bin/python3 ~/.config/scripts/things/infinitecanvas_context.py quick-add
+alt - a ; agents
+agents < j : ~/.config/scripts/sketchybar/agent_switch.sh down
+agents < k : ~/.config/scripts/sketchybar/agent_switch.sh up
+agents < down : ~/.config/scripts/sketchybar/agent_switch.sh down
+agents < up : ~/.config/scripts/sketchybar/agent_switch.sh up
+agents < return : ~/.config/scripts/sketchybar/agent_switch.sh enter; /opt/homebrew/bin/skhd -k "f20"
+agents < escape : ~/.config/scripts/sketchybar/agent_switch.sh close; /opt/homebrew/bin/skhd -k "f20"
+agents < alt - a : ~/.config/scripts/sketchybar/agent_switch.sh close; /opt/homebrew/bin/skhd -k "f20"
+agents < f20 ; default
+
+# s = stand up: explicit start, repeated presses never cancel or extend the break.
+default, things, thingsv, thingsinsert, thingsjump, agents < alt - s : ~/.config/scripts/sketchybar/standup.sh start-break
+
+# workspace history
+alt - b : ~/.config/scripts/yabai/workspace_history.sh next
+shift + alt - b : ~/.config/scripts/yabai/workspace_history.sh previous
+
+# open apps
+alt - return : open -a iTerm
+
+# ========== Move Window to Space (shift + alt + number) ==========
+shift + alt - 1 : ~/.config/scripts/sketchybar/space_focus.sh 1 move
+shift + alt - 2 : ~/.config/scripts/sketchybar/space_focus.sh 2 move
+shift + alt - 3 : ~/.config/scripts/sketchybar/space_focus.sh 3 move
+shift + alt - 4 : ~/.config/scripts/sketchybar/space_focus.sh 4 move
+shift + alt - 5 : ~/.config/scripts/sketchybar/space_focus.sh 5 move
+shift + alt - 6 : ~/.config/scripts/sketchybar/space_focus.sh 6 move
+shift + alt - 7 : ~/.config/scripts/sketchybar/space_focus.sh 7 move
+shift + alt - 8 : ~/.config/scripts/sketchybar/space_focus.sh 8 move
+shift + alt - 9 : ~/.config/scripts/sketchybar/space_focus.sh 9 move
+shift + alt - 0 : ~/.config/scripts/sketchybar/space_focus.sh 10 move
+alt - 1: ~/.config/scripts/sketchybar/space_focus.sh 1
+alt - 2: ~/.config/scripts/sketchybar/space_focus.sh 2
+alt - 3: ~/.config/scripts/sketchybar/space_focus.sh 3
+alt - 4: ~/.config/scripts/sketchybar/space_focus.sh 4
+alt - 5: ~/.config/scripts/sketchybar/space_focus.sh 5
+alt - 6: ~/.config/scripts/sketchybar/space_focus.sh 6
+alt - 7: ~/.config/scripts/sketchybar/space_focus.sh 7
+alt - 8: ~/.config/scripts/sketchybar/space_focus.sh 8
+alt - 9: ~/.config/scripts/sketchybar/space_focus.sh 9
+alt - 0: ~/.config/scripts/sketchybar/space_focus.sh 10
+
+shift + alt - g : /opt/homebrew/bin/yabai -m space --focus "$(/opt/homebrew/bin/yabai -m query --windows | jq -r 'first(.[] | select(.app == "Goodnotes") | .space)')" 2>/dev/null; true
+
+shift + alt - d : ~/.config/scripts/apps/toggle_goodnotes.sh
+
+
+# App launchers
+shift + alt - p : open -a "PDF Expert"; /opt/homebrew/bin/yabai -m space --focus 7 2>/dev/null; true
+alt - p: open "https://pkg.go.dev/std"; /opt/homebrew/bin/yabai -m space --focus "$(/opt/homebrew/bin/yabai -m query --windows | jq -r 'first(.[] | select(.app == "Safari") | .space)')" 2>/dev/null; true
+# alt - n : alacritty --title "vim-anywhere" -e ~/.local/bin/vim-anywhere
+# shift + alt - y: /opt/homebrew/bin/yabai --restart-service && /opt/homebrew/bin/skhd --restart-service
+shift + alt - y: killall yabai skhd; sleep 1; yabai --start-service; skhd --start-service
+
+# Personal scripts
+shift + alt - u: $HOME/.local/bin/photoshare-upload-clipboard
+shift + alt - left: ~/.config/scripts/lookup
+shift + alt - r: ~/.config/scripts/toggle_rotation.sh
+# alt - m: ~/dev/vox/cmd/transcriber/toggle_record.sh
+
+# Quick Jump
+alt - o : ~/.config/scripts/search && /opt/homebrew/bin/yabai -m space --focus "$(/opt/homebrew/bin/yabai -m query --windows | jq -r 'first(.[] | select(.app == "Safari") | .space)')" 2>/dev/null; true
+alt - c : open -a Safari; /opt/homebrew/bin/yabai -m space --focus "$(/opt/homebrew/bin/yabai -m query --windows | jq -r 'first(.[] | select(.app == "Safari") | .space)')" 2>/dev/null; true
+alt - i : /opt/homebrew/bin/yabai -m space --focus "$(/opt/homebrew/bin/yabai -m query --windows | jq -r 'first(.[] | select(.app == "iTerm2") | .space)')" 2>/dev/null; true
+default, things, thingsv, thingsinsert, thingsjump, agents < alt - n : /usr/bin/python3 ~/.config/scripts/things/things_now.py show

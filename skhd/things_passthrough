@@ -1,0 +1,193 @@
+# 由 sketchybar 的 Things 清单键盘模式使用（skhdrc 中 .load 引入）
+# 模式内按下任何清单没用到的打字键：退出清单模式，按键照常传给当前应用（-> 直通）
+# 覆盖：a-z、0-9、空格、退格、Tab、标点（十六进制 keycode）及其 shift 组合；
+# 不含清单自己占用的键 —— things: j k o v J K O return escape；thingsv: j k v d y J K return escape
+# （skhdrc 里 things/thingsv 的绑定改动时，这里要同步增删）
+# 已知：skhd 0.3.9 解析不了 0x2A（backslash / shift 的 |）这四条，会跳过它们（其余行照常加载），
+#   所以清单模式下按 \ 或 | 不会自动退出模式；其它打字键不受影响
+
+# things
+things < a -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < b -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < c -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < d -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < e -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < f -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < g -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < h -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < i -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < l -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < m -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < n -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < p -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < q -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < r -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < s -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < t -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < u -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < w -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < x -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < y -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < z -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 0 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 1 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 2 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 3 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 4 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 5 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 6 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 7 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 8 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 9 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < 0x2B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # comma
+things < 0x2F -> : ~/.config/scripts/things/things_nav.sh exit_mode  # period
+# slash 归 things_nav.sh jump（见 skhdrc），不再直通
+things < 0x29 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # semicolon
+things < 0x27 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # quote
+things < 0x21 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # lbracket
+things < 0x1E -> : ~/.config/scripts/things/things_nav.sh exit_mode  # rbracket
+things < 0x2A -> : ~/.config/scripts/things/things_nav.sh exit_mode  # backslash
+things < 0x1B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # minus
+things < 0x18 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # equal
+things < 0x32 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # grave
+things < shift - a -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - b -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - c -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - d -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - e -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - f -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - g -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - h -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - i -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - l -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - m -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - n -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - p -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - q -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - r -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - s -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - t -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - u -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - v -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - w -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - x -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - y -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - z -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 0 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 1 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 2 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 3 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 4 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 5 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 6 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 7 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 8 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 9 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - 0x2B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # comma
+things < shift - 0x2F -> : ~/.config/scripts/things/things_nav.sh exit_mode  # period
+things < shift - 0x2C -> : ~/.config/scripts/things/things_nav.sh exit_mode  # slash
+things < shift - 0x29 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # semicolon
+things < shift - 0x27 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # quote
+things < shift - 0x21 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # lbracket
+things < shift - 0x1E -> : ~/.config/scripts/things/things_nav.sh exit_mode  # rbracket
+things < shift - 0x2A -> : ~/.config/scripts/things/things_nav.sh exit_mode  # backslash
+things < shift - 0x1B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # minus
+things < shift - 0x18 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # equal
+things < shift - 0x32 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # grave
+things < space -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < shift - space -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < backspace -> : ~/.config/scripts/things/things_nav.sh exit_mode
+things < tab -> : ~/.config/scripts/things/things_nav.sh exit_mode
+
+# thingsv
+thingsv < a -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < b -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < c -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < e -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < f -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < g -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < h -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < i -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < l -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < m -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < n -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < o -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < p -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < q -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < r -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < s -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < t -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < u -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < w -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < x -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < z -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 0 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 1 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 2 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 3 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 4 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 5 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 6 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 7 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 8 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 9 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < 0x2B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # comma
+thingsv < 0x2F -> : ~/.config/scripts/things/things_nav.sh exit_mode  # period
+thingsv < 0x2C -> : ~/.config/scripts/things/things_nav.sh exit_mode  # slash
+thingsv < 0x29 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # semicolon
+thingsv < 0x27 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # quote
+thingsv < 0x21 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # lbracket
+thingsv < 0x1E -> : ~/.config/scripts/things/things_nav.sh exit_mode  # rbracket
+thingsv < 0x2A -> : ~/.config/scripts/things/things_nav.sh exit_mode  # backslash
+thingsv < 0x1B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # minus
+thingsv < 0x18 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # equal
+thingsv < 0x32 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # grave
+thingsv < shift - a -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - b -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - c -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - d -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - e -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - f -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - g -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - h -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - i -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - l -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - m -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - n -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - o -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - p -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - q -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - r -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - s -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - t -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - u -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - v -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - w -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - x -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - y -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - z -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 0 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 1 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 2 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 3 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 4 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 5 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 6 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 7 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 8 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 9 -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - 0x2B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # comma
+thingsv < shift - 0x2F -> : ~/.config/scripts/things/things_nav.sh exit_mode  # period
+thingsv < shift - 0x2C -> : ~/.config/scripts/things/things_nav.sh exit_mode  # slash
+thingsv < shift - 0x29 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # semicolon
+thingsv < shift - 0x27 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # quote
+thingsv < shift - 0x21 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # lbracket
+thingsv < shift - 0x1E -> : ~/.config/scripts/things/things_nav.sh exit_mode  # rbracket
+thingsv < shift - 0x2A -> : ~/.config/scripts/things/things_nav.sh exit_mode  # backslash
+thingsv < shift - 0x1B -> : ~/.config/scripts/things/things_nav.sh exit_mode  # minus
+thingsv < shift - 0x18 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # equal
+thingsv < shift - 0x32 -> : ~/.config/scripts/things/things_nav.sh exit_mode  # grave
+thingsv < space -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < shift - space -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < backspace -> : ~/.config/scripts/things/things_nav.sh exit_mode
+thingsv < tab -> : ~/.config/scripts/things/things_nav.sh exit_mode

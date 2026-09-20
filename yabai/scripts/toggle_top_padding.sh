@@ -1,0 +1,1 @@
+../../scripts/yabai/toggle_top_padding.sh
