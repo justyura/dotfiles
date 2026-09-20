@@ -74,5 +74,12 @@ Run `bootstrap.sh` again. A remote checkout is fast-forwarded, package installat
 idempotent, correct links are retained, and newly added profile entries are deployed. The script
 will stop rather than merge a diverged Git checkout.
 
+## Recovering an existing configuration
+
+When bootstrap encounters an existing target, it prints the exact backup directory and moves
+the old target there before linking the repository version. To restore one entry, unlink its
+deployed symlink and move the corresponding entry from that backup directory back into
+`~/.config`. Inspect both paths before doing so; the installer never deletes backups.
+
 macOS still needs the permissions required by yabai, skhd, Karabiner-Elements, and SketchyBar.
 Those permissions are intentionally not automated because macOS requires user confirmation.
