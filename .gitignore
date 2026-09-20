@@ -1,0 +1,30 @@
+# app-generated, not config
+alacritty/
+cagent/
+claude/
+envman/
+gh/
+github-copilot/
+htop/
+iterm2/
+raycast/
+neofetch/
+git/
+zathura/
+archived/
+
+# private, machine-specific bootstrap hook
+bootstrap.local.sh
+
+# runtime files
+*.log
+*.swp
+*.bak
+*.before-*
+.DS_Store
+__pycache__/
+*.pyc
+things/*.lock
+things/infinitecanvas-projects.json
+tmux/plugins/
+local/
