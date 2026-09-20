@@ -43,10 +43,15 @@ the corresponding package names live together in `install_packages()` in `bootst
 mapping is easy to audit. The portable dependencies are Git, curl, Neovim, tmux, fzf, ripgrep,
 jq, and xclip.
 
-The Neovim configuration requires Neovim 0.11 or newer. Some stable Linux distributions ship
+The Neovim configuration requires Neovim 0.12 or newer. Some stable Linux distributions ship
 an older build, so Linux bootstrap checks the active binary and, when necessary, installs the
 official release archive below `/opt/dotfiles/` with an entry point at `/usr/local/bin/nvim`.
 Existing unmanaged files at that entry point are never overwritten.
+
+The `nvim-treesitter` main branch also requires tree-sitter CLI 0.26.1 or newer and a C compiler.
+Bootstrap installs the compiler toolchain from the Linux package manager and the official CLI
+release below `/opt/dotfiles/`, exposed as `/usr/local/bin/tree-sitter`. macOS installs the CLI
+through Homebrew.
 
 The normal install also bootstraps TPM under `~/.tmux/plugins/tpm` and installs the plugins from
 `tmux.conf`. Neovim bootstraps lazy.nvim and its plugins on first launch.

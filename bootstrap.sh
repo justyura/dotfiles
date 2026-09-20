@@ -62,7 +62,7 @@ nvim_meets_requirement() {
   version=$("$nvim_command" --version 2>/dev/null | sed -n '1s/^NVIM v\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1 \2/p')
   [ -n "$version" ] || return 1
   set -- $version
-  [ "$1" -gt 0 ] || { [ "$1" -eq 0 ] && [ "$2" -ge 11 ]; }
+  [ "$1" -gt 0 ] || { [ "$1" -eq 0 ] && [ "$2" -ge 12 ]; }
 }
 
 install_current_neovim_linux() {
@@ -73,7 +73,7 @@ install_current_neovim_linux() {
   case "$(uname -m)" in
     x86_64|amd64) nvim_arch=x86_64 ;;
     aarch64|arm64) nvim_arch=arm64 ;;
-    *) die "Neovim 0.11+ is required; unsupported Linux architecture: $(uname -m)" ;;
+    *) die "Neovim 0.12+ is required; unsupported Linux architecture: $(uname -m)" ;;
   esac
 
   archive_name=nvim-linux-$nvim_arch.tar.gz
@@ -99,7 +99,7 @@ install_current_neovim_linux() {
   extracted_nvim=$extracted_dir/bin/nvim
   nvim_meets_requirement "$extracted_nvim" || {
     rm -rf "$temporary_dir"
-    die "downloaded Neovim does not meet the required version (0.11+)"
+    die "downloaded Neovim does not meet the required version (0.12+)"
   }
   nvim_version=$($extracted_nvim --version | sed -n '1s/^NVIM v//p')
   install_dir=/opt/dotfiles/nvim-$nvim_version-$nvim_arch
@@ -127,7 +127,82 @@ install_current_neovim_linux() {
   hash -r 2>/dev/null || true
 
   command -v nvim >/dev/null 2>&1 || die "Neovim was installed, but nvim is not on PATH"
-  nvim_meets_requirement "$(command -v nvim)" || die "nvim on PATH is still older than 0.11: $(command -v nvim)"
+  nvim_meets_requirement "$(command -v nvim)" || die "nvim on PATH is still older than 0.12: $(command -v nvim)"
+}
+
+tree_sitter_meets_requirement() {
+  tree_sitter_command=$1
+  version=$("$tree_sitter_command" --version 2>/dev/null | sed -n '1s/^tree-sitter \([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\).*/\1 \2 \3/p')
+  [ -n "$version" ] || return 1
+  set -- $version
+  [ "$1" -gt 0 ] || {
+    [ "$1" -eq 0 ] && { [ "$2" -gt 26 ] || { [ "$2" -eq 26 ] && [ "$3" -ge 1 ]; }; }
+  }
+}
+
+install_tree_sitter_linux() {
+  if command -v tree-sitter >/dev/null 2>&1 && tree_sitter_meets_requirement "$(command -v tree-sitter)"; then
+    return 0
+  fi
+
+  case "$(uname -m)" in
+    x86_64|amd64) tree_sitter_arch=x64 ;;
+    aarch64|arm64) tree_sitter_arch=arm64 ;;
+    *) die "tree-sitter CLI 0.26.1+ is required; unsupported Linux architecture: $(uname -m)" ;;
+  esac
+
+  archive_name=tree-sitter-cli-linux-$tree_sitter_arch.zip
+  download_url=https://github.com/tree-sitter/tree-sitter/releases/latest/download/$archive_name
+  if [ "$DRY_RUN" -eq 1 ]; then
+    say "Would install the current tree-sitter CLI for Linux $tree_sitter_arch from $download_url"
+    return 0
+  fi
+
+  temporary_dir=$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-tree-sitter.XXXXXX")
+  archive_path=$temporary_dir/$archive_name
+  say "Installing current tree-sitter CLI for Linux $tree_sitter_arch"
+  if ! curl -fL --retry 3 -o "$archive_path" "$download_url"; then
+    rm -rf "$temporary_dir"
+    die "failed to download tree-sitter CLI from $download_url"
+  fi
+  if ! unzip -q "$archive_path" -d "$temporary_dir"; then
+    rm -rf "$temporary_dir"
+    die "failed to extract $archive_name"
+  fi
+
+  extracted_tree_sitter=$temporary_dir/tree-sitter
+  tree_sitter_meets_requirement "$extracted_tree_sitter" || {
+    rm -rf "$temporary_dir"
+    die "downloaded tree-sitter CLI does not meet the required version (0.26.1+)"
+  }
+  tree_sitter_version=$("$extracted_tree_sitter" --version | awk '{print $2}')
+  install_dir=/opt/dotfiles/tree-sitter-$tree_sitter_version-$tree_sitter_arch
+
+  if [ -e "$install_dir" ] && [ ! -x "$install_dir/bin/tree-sitter" ]; then
+    rm -rf "$temporary_dir"
+    die "$install_dir exists but does not contain a working tree-sitter binary"
+  elif [ ! -x "$install_dir/bin/tree-sitter" ]; then
+    as_root mkdir -p "$install_dir/bin"
+    as_root cp "$extracted_tree_sitter" "$install_dir/bin/tree-sitter"
+    as_root chmod 755 "$install_dir/bin/tree-sitter"
+  fi
+
+  tree_sitter_link=/usr/local/bin/tree-sitter
+  if [ -e "$tree_sitter_link" ] || [ -L "$tree_sitter_link" ]; then
+    current_target=$(readlink "$tree_sitter_link" 2>/dev/null || true)
+    [ "$current_target" = "$install_dir/bin/tree-sitter" ] || {
+      rm -rf "$temporary_dir"
+      die "$tree_sitter_link already exists and is not managed by this bootstrap"
+    }
+  else
+    as_root mkdir -p /usr/local/bin
+    as_root ln -s "$install_dir/bin/tree-sitter" "$tree_sitter_link"
+  fi
+  rm -rf "$temporary_dir"
+  hash -r 2>/dev/null || true
+
+  command -v tree-sitter >/dev/null 2>&1 || die "tree-sitter CLI was installed, but is not on PATH"
+  tree_sitter_meets_requirement "$(command -v tree-sitter)" || die "tree-sitter on PATH is still older than 0.26.1: $(command -v tree-sitter)"
 }
 
 while [ "$#" -gt 0 ]; do
@@ -189,15 +264,16 @@ install_packages() {
       # Package names are kept here because they differ by distribution.
       if command -v apt-get >/dev/null 2>&1; then
         as_root apt-get update
-        as_root apt-get install -y git curl tmux fzf ripgrep jq xclip
+        as_root apt-get install -y git curl tmux fzf ripgrep jq xclip unzip build-essential
       elif command -v pacman >/dev/null 2>&1; then
-        as_root pacman -S --needed git curl tmux fzf ripgrep jq xclip
+        as_root pacman -S --needed git curl tmux fzf ripgrep jq xclip unzip base-devel
       elif command -v dnf >/dev/null 2>&1; then
-        as_root dnf install -y git curl tmux fzf ripgrep jq xclip
+        as_root dnf install -y git curl tmux fzf ripgrep jq xclip unzip gcc gcc-c++ make
       else
         die "unsupported Linux package manager; rerun with --config-only and install packages listed in docs/bootstrap.md"
       fi
       install_current_neovim_linux
+      install_tree_sitter_linux
       ;;
   esac
 }
@@ -271,10 +347,16 @@ install_tmux_plugins() {
 install_tmux_plugins
 
 if ! command -v nvim >/dev/null 2>&1; then
-  warn "Neovim is not installed; this configuration requires 0.11 or newer"
+  warn "Neovim is not installed; this configuration requires 0.12 or newer"
 elif ! nvim_meets_requirement "$(command -v nvim)"; then
-  warn "this Neovim configuration needs 0.11 or newer; active command: $(command -v nvim)"
+  warn "this Neovim configuration needs 0.12 or newer; active command: $(command -v nvim)"
 fi
+if ! command -v tree-sitter >/dev/null 2>&1; then
+  warn "tree-sitter CLI is not installed; nvim-treesitter main requires 0.26.1 or newer"
+elif ! tree_sitter_meets_requirement "$(command -v tree-sitter)"; then
+  warn "nvim-treesitter needs tree-sitter CLI 0.26.1 or newer; active command: $(command -v tree-sitter)"
+fi
+command -v cc >/dev/null 2>&1 || warn "a C compiler is required to build Treesitter parsers"
 
 # Optional, untracked machine-specific finishing steps.
 if [ -f "$REPO_DIR/bootstrap.local.sh" ]; then

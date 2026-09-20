@@ -5,6 +5,7 @@ brew "tmux"
 brew "fzf"
 brew "ripgrep"
 brew "jq"
+brew "tree-sitter"
 
 # macOS window-management stack.
 tap "koekeishiya/formulae"
@@ -16,4 +17,3 @@ brew "sketchybar"
 # Utilities used by scripts/.
 brew "choose-gui"
 brew "displayplacer"
-
